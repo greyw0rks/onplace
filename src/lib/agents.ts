@@ -23,7 +23,10 @@ export function listAgentsByCategory(
 
   return prisma.agent.findMany({
     where: slug ? { categorySlug: slug } : undefined,
-    include: { category: true },
+    include: {
+      category: true,
+      healthChecks: { orderBy: { timestamp: "desc" }, take: 1 },
+    },
     orderBy,
   });
 }

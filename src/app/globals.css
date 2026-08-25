@@ -1,56 +1,246 @@
 @import "tailwindcss";
 
 :root {
-  --background: #09090b;
-  --surface: #18181b;
-  --surface-elevated: #212124;
-  --primary: #7c3aed;
-  --secondary: #4c1d95;
-  --accent: #a78bfa;
-  --foreground: #fafafa;
-  --foreground-muted: #a1a1aa;
-  --border: #27272a;
+  --bg: #050507;
+  --ink: #0a0a0d;
+  --surface: #0f0f12;
+  --border: #1a1a1f;
 
-  --trust-excellent: #22c55e;
-  --trust-strong: #65a30d;
-  --trust-moderate: #f59e0b;
-  --trust-weak: #ea580c;
-  --trust-high-risk: #ef4444;
+  --text-0: #f2f2f5;
+  --text-1: #8b8c96;
+  --text-2: #4d4e58;
+
+  --magenta: #ff3ea5;
+  --cyan: #3ef2ff;
+  --lime: #c6ff3e;
+  --amber: #ffb13e;
+  --red: #ff4d4d;
+  --green: #42f099;
+
+  --primary: var(--cyan);
+  --accent: var(--magenta);
+  --success: var(--green);
+  --warning: var(--amber);
+  --error: var(--red);
 }
 
 @theme inline {
-  --color-background: var(--background);
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
   --color-surface: var(--surface);
-  --color-surface-elevated: var(--surface-elevated);
-  --color-primary: var(--primary);
-  --color-secondary: var(--secondary);
-  --color-accent: var(--accent);
-  --color-foreground: var(--foreground);
-  --color-foreground-muted: var(--foreground-muted);
   --color-border: var(--border);
 
-  --color-trust-excellent: var(--trust-excellent);
-  --color-trust-strong: var(--trust-strong);
-  --color-trust-moderate: var(--trust-moderate);
-  --color-trust-weak: var(--trust-weak);
-  --color-trust-high-risk: var(--trust-high-risk);
+  --color-text-0: var(--text-0);
+  --color-text-1: var(--text-1);
+  --color-text-2: var(--text-2);
+
+  --color-magenta: var(--magenta);
+  --color-cyan: var(--cyan);
+  --color-lime: var(--lime);
+  --color-amber: var(--amber);
+  --color-red: var(--red);
+  --color-green: var(--green);
+
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
 
   --font-sans: var(--font-body);
   --font-heading: var(--font-heading);
   --font-mono: var(--font-mono);
-
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
 }
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  height: 100%;
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  background: var(--bg);
+  color: var(--text-0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), var(--font-body), sans-serif;
+  font-family: var(--font-heading), 'Space Grotesk', sans-serif;
+  font-weight: 600;
+}
+
+/* Sonar pulse animation */
+@keyframes sonar-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.8); }
+}
+
+.sonar-pulse {
+  animation: sonar-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Glow effects */
+.glow-cyan {
+  box-shadow: 0 0 8px rgba(62, 242, 255, 0.4), 0 0 16px rgba(62, 242, 255, 0.2);
+}
+
+.glow-magenta {
+  box-shadow: 0 0 8px rgba(255, 62, 165, 0.4), 0 0 16px rgba(255, 62, 165, 0.2);
+}
+
+.glow-lime {
+  box-shadow: 0 0 8px rgba(198, 255, 62, 0.4), 0 0 16px rgba(198, 255, 62, 0.2);
+}
+
+.glow-green {
+  box-shadow: 0 0 8px rgba(66, 240, 153, 0.4), 0 0 16px rgba(66, 240, 153, 0.2);
+}
+
+/* Ticker scroll */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-scroll {
+  animation: ticker-scroll 30s linear infinite;
+}
+
+/* Network line pulse */
+@keyframes line-pulse {
+  0%, 100% { stroke-dashoffset: 1000; }
+  50% { stroke-dashoffset: 0; }
+}
+
+.line-pulse {
+  stroke-dasharray: 1000;
+  animation: line-pulse 3s linear infinite;
+}
+
+/* Fade in */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fade-in 0.4s ease-out;
+}
+
+/* Pulse dot */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Canvas scope */
+.scope-canvas {
+  width: 100%;
+  height: 100%;
+  image-rendering: crisp-edges;
+}
+
+/* Chip styles */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+}
+
+.chip-active {
+  background: rgba(62, 242, 255, 0.1);
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.chip-idle {
+  background: rgba(139, 140, 150, 0.1);
+  border-color: var(--text-2);
+  color: var(--text-1);
+}
+
+.chip-error {
+  background: rgba(255, 77, 77, 0.1);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.chip-success {
+  background: rgba(66, 240, 153, 0.1);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+/* Button base */
+button, .btn {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: var(--bg);
+}
+
+.btn-primary:hover {
+  background: transparent;
+  color: var(--cyan);
+  box-shadow: 0 0 12px rgba(62, 242, 255, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-0);
+}
+
+.btn-secondary:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+/* Live indicator */
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--cyan);
+}
+
+.live-indicator::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
 }
