@@ -67,6 +67,7 @@ model HealthCheck {
   success    Boolean
   latencyMs  Int?
   error      String?
+  txHash     String?
 
   @@index([agentId, timestamp])
 }
