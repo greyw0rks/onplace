@@ -53,7 +53,7 @@ export default async function AgentDetailPage({
       {/* Hero scope */}
       <div className="border-b border-border bg-ink">
         <div className="mx-auto max-w-[1320px] px-6">
-          <div className="h-40 relative overflow-hidden">
+          <div className="h-32 relative overflow-hidden">
             <AgentScopeCanvas
               agentId={agent.id}
               healthy={agent.healthChecks?.[0]?.success ?? true}
@@ -63,62 +63,62 @@ export default async function AgentDetailPage({
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1320px] px-6 py-8">
+      <div className="mx-auto max-w-[1320px] px-6 py-6">
         {hired && (
-          <div className="mb-6 border border-green rounded-lg p-4 bg-green/5">
+          <div className="mb-4 border border-green rounded p-3 bg-green/5">
             <div className="flex items-center gap-2">
               <span className="inline-block w-2 h-2 rounded-full bg-green"></span>
-              <span className="text-sm text-green font-semibold">Agent hired successfully!</span>
+              <span className="text-xs text-green font-semibold">Agent hired successfully!</span>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main column */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-5">
             {/* Header */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="chip chip-idle text-[10px] px-2 py-1">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="chip chip-idle text-[9px] px-2 py-1">
                   {CATEGORY_LABELS[agent.categorySlug]}
                 </span>
                 {isLive && (
-                  <span className="chip chip-success text-[10px] px-2 py-1">
+                  <span className="chip chip-success text-[9px] px-2 py-1">
                     <span className="pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-green mr-1"></span>
                     Live on BSC Testnet
                   </span>
                 )}
               </div>
-              <h1 className="font-heading text-3xl font-bold mb-2">{agent.name}</h1>
-              <p className="text-sm text-text-2">by {agent.developer}</p>
+              <h1 className="font-heading text-2xl font-bold mb-1">{agent.name}</h1>
+              <p className="text-xs text-text-2">by {agent.developer}</p>
             </div>
 
             {/* Description */}
-            <div className="border border-border rounded-lg p-6">
-              <h2 className="font-heading text-sm uppercase tracking-wider text-text-2 mb-3">
+            <div className="border border-border rounded p-4">
+              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-2">
                 Description
               </h2>
-              <p className="text-sm text-text-1 leading-relaxed">{agent.description}</p>
+              <p className="text-xs text-text-1 leading-relaxed">{agent.description}</p>
             </div>
 
             {/* Health check history */}
-            <div className="border border-border rounded-lg p-6">
-              <h2 className="font-heading text-sm uppercase tracking-wider text-text-2 mb-4">
+            <div className="border border-border rounded p-4">
+              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-3">
                 Health Check History
               </h2>
               {agent.healthChecks.length > 0 ? (
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {agent.healthChecks.map((check) => (
                     <div
                       key={check.id}
-                      className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                      className="flex items-center justify-between py-1.5 border-b border-border last:border-0"
                     >
-                      <span className="text-xs text-text-2 font-mono">
+                      <span className="text-[10px] text-text-2 font-mono">
                         {check.timestamp.toLocaleString()}
                       </span>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <span
-                          className={`text-xs font-semibold ${
+                          className={`text-[10px] font-semibold ${
                             check.success ? "text-green" : "text-red"
                           }`}
                         >
@@ -129,12 +129,12 @@ export default async function AgentDetailPage({
                             href={`${BSCSCAN_TESTNET_TX_BASE}${check.txHash}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs font-mono text-cyan hover:underline"
+                            className="text-[10px] font-mono text-cyan hover:underline"
                           >
                             View tx ↗
                           </a>
                         ) : (
-                          <span className="text-xs text-text-2 font-mono">
+                          <span className="text-[10px] text-text-2 font-mono">
                             {check.latencyMs != null ? `${check.latencyMs}ms` : "—"}
                           </span>
                         )}
@@ -148,11 +148,11 @@ export default async function AgentDetailPage({
             </div>
 
             {/* Details */}
-            <div className="border border-border rounded-lg p-6">
-              <h2 className="font-heading text-sm uppercase tracking-wider text-text-2 mb-4">
+            <div className="border border-border rounded p-4">
+              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-3">
                 Technical Details
               </h2>
-              <dl className="grid grid-cols-2 gap-4 text-xs">
+              <dl className="grid grid-cols-2 gap-3 text-[10px]">
                 <Detail label="ERC-8004 ID" value={agent.erc8004Id || "—"} mono />
                 <Detail label="Chain" value={agent.chain || "—"} />
                 <Detail label="Wallet" value={agent.walletAddress || "—"} mono />
@@ -169,26 +169,26 @@ export default async function AgentDetailPage({
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-5">
             {/* Trust score */}
-            <div className="border border-border rounded-lg p-6">
-              <h2 className="font-heading text-sm uppercase tracking-wider text-text-2 mb-4">
+            <div className="border border-border rounded p-4">
+              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-3">
                 Trust Score
               </h2>
               <div className="text-center">
-                <div className={`text-5xl font-heading font-bold text-${getTrustColor(band)} mb-2`}>
+                <div className={`text-4xl font-heading font-bold text-${getTrustColor(band)} mb-1`}>
                   {trust.toFixed(1)}%
                 </div>
-                <div className="text-xs text-text-2 uppercase tracking-wider">{band}</div>
+                <div className="text-[10px] text-text-2 uppercase tracking-wider">{band}</div>
               </div>
             </div>
 
             {/* Stats */}
-            <div className="border border-border rounded-lg p-6">
-              <h2 className="font-heading text-sm uppercase tracking-wider text-text-2 mb-4">
+            <div className="border border-border rounded p-4">
+              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-3">
                 Metrics
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <Stat label="Uptime" value={agent.uptimePct ? `${agent.uptimePct.toFixed(1)}%` : "—"} />
                 <Stat label="Avg Latency" value={agent.latencyMs ? `${agent.latencyMs}ms` : "—"} />
                 <Stat label="Last Check" value={agent.lastHealthCheckAt ? new Date(agent.lastHealthCheckAt).toLocaleTimeString() : "Never"} />
@@ -197,11 +197,11 @@ export default async function AgentDetailPage({
             </div>
 
             {/* Hire */}
-            <div className="border border-cyan/40 rounded-lg p-6 glow-cyan">
-              <h2 className="font-heading text-sm uppercase tracking-wider text-text-2 mb-4">
+            <div className="border border-cyan/40 rounded p-4 glow-cyan">
+              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-3">
                 Hire This Agent
               </h2>
-              <p className="text-xs text-text-1 mb-4 leading-relaxed">
+              <p className="text-[10px] text-text-1 mb-3 leading-relaxed">
                 Deploy this verified agent to your wallet. All on-chain activity will be logged and verifiable.
               </p>
               <form action={createHire}>
@@ -224,17 +224,17 @@ export default async function AgentDetailPage({
 function Detail({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div>
-      <dt className="text-text-2 uppercase tracking-wider mb-1">{label}</dt>
-      <dd className={`${mono ? "font-mono" : ""} truncate`}>{value}</dd>
+      <dt className="text-text-2 uppercase tracking-wider mb-0.5 text-[9px]">{label}</dt>
+      <dd className={`${mono ? "font-mono" : ""} truncate text-[10px]`}>{value}</dd>
     </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-border last:border-0">
-      <span className="text-xs text-text-2 uppercase tracking-wider">{label}</span>
-      <span className="text-xs font-mono font-semibold">{value}</span>
+    <div className="flex items-center justify-between py-1.5 border-b border-border last:border-0">
+      <span className="text-[10px] text-text-2 uppercase tracking-wider">{label}</span>
+      <span className="text-[10px] font-mono font-semibold">{value}</span>
     </div>
   );
 }

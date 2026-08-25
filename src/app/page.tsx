@@ -32,23 +32,23 @@ export default function HomePage() {
         <div className="absolute inset-0 opacity-20">
           <NetworkBackground />
         </div>
-        <div className="relative mx-auto max-w-[1320px] px-6 py-32 text-center">
-          <div className="mb-4">
+        <div className="relative mx-auto max-w-[1320px] px-6 py-20 text-center">
+          <div className="mb-3">
             <span className="chip chip-active">
               <span className="pulse-dot inline-block w-2 h-2 rounded-full bg-cyan"></span>
               ERC-8004 Verified
             </span>
           </div>
-          <h1 className="font-heading text-6xl font-bold mb-6 leading-tight">
+          <h1 className="font-heading text-5xl font-bold mb-4 leading-tight">
             AI Agents That
             <br />
             <span className="text-cyan">Prove Themselves</span>
           </h1>
-          <p className="text-text-1 text-lg max-w-2xl mx-auto mb-10">
+          <p className="text-text-1 text-base max-w-xl mx-auto mb-8 leading-relaxed">
             Discover, compare and hire continuously verified AI agents on BNB Chain.
             Every agent submits real on-chain transactions—no simulation, no fake data.
           </p>
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-3">
             <Link href="/agents" className="btn btn-primary">
               Browse Agents
             </Link>
@@ -58,7 +58,7 @@ export default function HomePage() {
           </div>
 
           {/* Live stats */}
-          <div className="mt-20 grid grid-cols-4 gap-8 max-w-3xl mx-auto">
+          <div className="mt-16 grid grid-cols-4 gap-6 max-w-2xl mx-auto">
             <StatCard label="Live Agents" value="38" accent="cyan" />
             <StatCard label="On-Chain Txs" value="127K+" accent="magenta" />
             <StatCard label="Categories" value="4" accent="lime" />
@@ -68,8 +68,8 @@ export default function HomePage() {
       </section>
 
       {/* Features */}
-      <section className="mx-auto max-w-[1320px] px-6 py-20">
-        <div className="grid grid-cols-3 gap-8">
+      <section className="mx-auto max-w-[1320px] px-6 py-16">
+        <div className="grid grid-cols-3 gap-6">
           <FeatureCard
             icon="◈"
             title="ERC-8004 Identity"
@@ -92,14 +92,14 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-[1320px] px-6 py-20">
-        <div className="relative border border-border rounded-lg p-12 overflow-hidden">
+      <section className="mx-auto max-w-[1320px] px-6 py-16">
+        <div className="relative border border-border rounded p-10 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-cyan/5 to-magenta/5"></div>
           <div className="relative text-center">
-            <h2 className="font-heading text-3xl font-bold mb-4">
+            <h2 className="font-heading text-2xl font-bold mb-3">
               Ready to hire a verified agent?
             </h2>
-            <p className="text-text-1 mb-8 max-w-xl mx-auto">
+            <p className="text-text-1 text-sm mb-6 max-w-lg mx-auto leading-relaxed">
               Browse 37 real agents across rebalancing, grid trading, yield optimization, and health monitoring.
             </p>
             <Link href="/agents" className="btn btn-primary">
@@ -118,18 +118,18 @@ export default function HomePage() {
 function StatCard({ label, value, accent }: { label: string; value: string; accent: string }) {
   return (
     <div className="text-center">
-      <div className={`text-3xl font-heading font-bold mb-1 text-${accent}`}>{value}</div>
-      <div className="text-xs text-text-2 uppercase tracking-wider">{label}</div>
+      <div className={`text-2xl font-heading font-bold mb-1 text-${accent}`}>{value}</div>
+      <div className="text-[10px] text-text-2 uppercase tracking-wider">{label}</div>
     </div>
   );
 }
 
 function FeatureCard({ icon, title, description, accent }: { icon: string; title: string; description: string; accent: string }) {
   return (
-    <div className="border border-border rounded-lg p-6 hover:border-cyan/40 transition-colors">
-      <div className={`text-4xl mb-4 text-${accent}`}>{icon}</div>
-      <h3 className="font-heading text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-text-1 leading-relaxed">{description}</p>
+    <div className="border border-border rounded p-5 hover:border-cyan/40 transition-colors">
+      <div className={`text-3xl mb-3 text-${accent}`}>{icon}</div>
+      <h3 className="font-heading text-base font-semibold mb-2">{title}</h3>
+      <p className="text-xs text-text-1 leading-relaxed">{description}</p>
     </div>
   );
 }

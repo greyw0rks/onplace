@@ -73,8 +73,8 @@ export default async function AgentsPage({
       </div>
 
       {/* Agent grid */}
-      <div className="mx-auto max-w-[1320px] px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="mx-auto max-w-[1320px] px-6 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {agents.map((agent) => {
             const trust = trustScoreOf(agent);
             const band = trustBand(trust);
@@ -82,10 +82,10 @@ export default async function AgentsPage({
               <Link
                 key={agent.id}
                 href={`/agents/${agent.id}`}
-                className="block border border-border rounded-lg overflow-hidden hover:border-cyan/40 transition-all fade-in group"
+                className="block border border-border rounded overflow-hidden hover:border-cyan/40 transition-all fade-in group"
               >
                 {/* Scope visualization */}
-                <div className="h-24 bg-ink border-b border-border relative overflow-hidden">
+                <div className="h-20 bg-ink border-b border-border relative overflow-hidden">
                   <AgentScopeCanvas
                     agentId={agent.id}
                     healthy={agent.healthChecks?.[0]?.success ?? true}
@@ -94,30 +94,30 @@ export default async function AgentsPage({
                 </div>
 
                 {/* Card content */}
-                <div className="p-5">
-                  <div className="flex items-start justify-between mb-3">
+                <div className="p-4">
+                  <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-heading text-base font-semibold truncate group-hover:text-cyan transition-colors">
+                      <h3 className="font-heading text-sm font-semibold truncate group-hover:text-cyan transition-colors">
                         {agent.name}
                       </h3>
-                      <p className="text-xs text-text-2 mt-0.5">by {agent.developer}</p>
+                      <p className="text-[10px] text-text-2 mt-0.5">by {agent.developer}</p>
                     </div>
                     {agent.sourceType === "self_built" && (
-                      <span className="chip chip-success text-[10px] px-2 py-1 ml-2 flex-shrink-0">
+                      <span className="chip chip-success text-[9px] px-2 py-1 ml-2 flex-shrink-0">
                         Live
                       </span>
                     )}
                   </div>
 
-                  <p className="text-xs text-text-1 leading-relaxed mb-4 line-clamp-2">
+                  <p className="text-xs text-text-1 leading-relaxed mb-3 line-clamp-2">
                     {agent.description}
                   </p>
 
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-[10px]">
                     <div>
                       <span className="text-text-2">Trust:</span>{" "}
                       <span className={`font-semibold text-${getTrustColor(band)}`}>
-                        {trust.toFixed(1)}% {band}
+                        {trust.toFixed(1)}%
                       </span>
                     </div>
                     {agent.healthChecks?.[0] && (
@@ -140,8 +140,8 @@ export default async function AgentsPage({
         </div>
 
         {agents.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-text-2">No agents found in this category.</p>
+          <div className="text-center py-16">
+            <p className="text-text-2 text-sm">No agents found in this category.</p>
           </div>
         )}
       </div>
