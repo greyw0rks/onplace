@@ -1,4 +1,4 @@
-# Onplace: Consolidated Feature Specification
+# Onplaced: Consolidated Feature Specification
 
 **Version**: 1.0  
 **Date**: 2026-08-26  
@@ -8,7 +8,7 @@
 
 ## Overview
 
-Across the **Onplace** discussions, we've built up a comprehensive feature set. Onplace is more than an agent directory—it's essentially **an agent marketplace + verification network + reputation layer + testing infrastructure**.
+Across the **Onplaced** discussions, we've built up a comprehensive feature set. Onplaced is more than an agent directory—it's essentially **an agent marketplace + verification network + reputation layer + testing infrastructure**.
 
 ---
 
@@ -37,7 +37,7 @@ Across the **Onplace** discussions, we've built up a comprehensive feature set. 
 
 ## 2. Live Marketplace Homepage
 
-When users enter Onplace, they immediately see what's happening across the ecosystem.
+When users enter Onplaced, they immediately see what's happening across the ecosystem.
 
 ### Top section
 
@@ -105,7 +105,7 @@ Every agent gets a detailed profile.
 
 ## 4. Continuous Agent Testing
 
-This is one of the biggest Onplace differentiators.
+This is one of the biggest Onplaced differentiators.
 
 Agents aren't verified once—they're continuously tested.
 
@@ -127,14 +127,14 @@ Agents aren't verified once—they're continuously tested.
 
 ## 5. Automated Repository Monitoring
 
-Onplace tracks the agent's source repository.
+Onplaced tracks the agent's source repository.
 
 ```text
 GitHub
    ↓
 New Commit
    ↓
-Onplace detects change
+Onplaced detects change
    ↓
 Analyze change
    ↓
@@ -151,7 +151,7 @@ This is a major feature.
 
 ## 6. Automatic Suspension
 
-If an agent changes significantly, Onplace can temporarily disable its marketplace verification.
+If an agent changes significantly, Onplaced can temporarily disable its marketplace verification.
 
 ```text
 New version detected
@@ -202,7 +202,7 @@ Features:
 
 ## 8. Benchmark System
 
-Onplace creates standardized tests for different categories.
+Onplaced creates standardized tests for different categories.
 
 ### Yield agents
 
@@ -241,7 +241,7 @@ Public Tests
 Hidden Tests
 ```
 
-This prevents developers from optimizing agents specifically for Onplace's known tests.
+This prevents developers from optimizing agents specifically for Onplaced's known tests.
 
 ---
 
@@ -324,7 +324,7 @@ We separated different types of reputation.
 
 ### Trust
 
-How confident Onplace is in the agent.
+How confident Onplaced is in the agent.
 
 ### Health
 
@@ -344,12 +344,12 @@ This is much better than one meaningless "AI score."
 
 ## 14. 60/40 Rating System
 
-**60% Onplace + 40% users**
+**60% Onplaced + 40% users**
 
 The 60% comes from measurable evidence:
 
 ```text
-Onplace = 60%
+Onplaced = 60%
 
 25% Benchmark performance
 15% Reliability
@@ -474,7 +474,7 @@ Users shouldn't need to contact support to stop an agent.
 
 ## 20. Incident System
 
-Onplace maintains a transparent incident system.
+Onplaced maintains a transparent incident system.
 
 Severity:
 
@@ -511,7 +511,7 @@ Restore
 
 Instead of: `✓ Verified`
 
-Show: **Verified by Onplace**
+Show: **Verified by Onplaced**
 
 Then:
 
@@ -540,7 +540,7 @@ Examples:
 > 🔐 Agent Omega passed security verification  
 > 🚀 New agent registered
 
-This makes Onplace feel like an ecosystem rather than a database.
+This makes Onplaced feel like an ecosystem rather than a database.
 
 ---
 
@@ -611,7 +611,7 @@ Developers can:
 
 ## 27. Agent Improvement Loop
 
-Onplace shouldn't only punish bad performance—it should help developers improve.
+Onplaced shouldn't only punish bad performance—it should help developers improve.
 
 ```text
 Agent
@@ -694,7 +694,7 @@ Verification
 Marketplace
 ```
 
-Onplace can fingerprint verified versions.
+Onplaced can fingerprint verified versions.
 
 If production changes without a corresponding verified version:
 
@@ -726,7 +726,7 @@ Users could build workflows such as:
 
 Individual agents might pass while their combination fails.
 
-So Onplace should eventually test:
+So Onplaced should eventually test:
 
 **Agent A ✓**  
 **Agent B ✓**  
@@ -734,7 +734,7 @@ So Onplace should eventually test:
 
 But: **Workflow ⚠**
 
-This gives Onplace another unique verification layer.
+This gives Onplaced another unique verification layer.
 
 ---
 
@@ -798,7 +798,7 @@ Examples:
 
 ## 36. Agent Discovery API
 
-Other applications and agents can query Onplace.
+Other applications and agents can query Onplaced.
 
 ```text
 GET /agents
@@ -815,12 +815,12 @@ GET /agents/search
 
 This is potentially one of the biggest long-term features.
 
-An AI agent can search Onplace for another agent.
+An AI agent can search Onplaced for another agent.
 
 ```text
 Research Agent
       ↓
-Search Onplace
+Search Onplaced
       ↓
 Find Yield Agent
       ↓
@@ -833,7 +833,7 @@ Hire Yield Agent
 Execute Task
 ```
 
-So Onplace becomes infrastructure **for agents hiring agents**, not just humans hiring agents.
+So Onplaced becomes infrastructure **for agents hiring agents**, not just humans hiring agents.
 
 ---
 
@@ -843,7 +843,7 @@ When a user describes a task:
 
 > "I need an agent to monitor my lending positions."
 
-Onplace can produce:
+Onplaced can produce:
 
 ### HealthGuard
 
@@ -909,7 +909,7 @@ Everything connects into one loop:
 
 And the **real moat** is the data generated throughout that loop.
 
-The more agents Onplace tests, the more performance history it builds.
+The more agents Onplaced tests, the more performance history it builds.
 
 The more users interact with agents, the better its reputation system becomes.
 
@@ -933,4 +933,4 @@ So the marketplace becomes progressively harder to replicate.
 
 ---
 
-**This is the Onplace product we've designed so far.**
+**This is the Onplaced product we've designed so far.**

@@ -3,7 +3,7 @@
 ## ✅ Completed Items
 
 ### 1. Live Deployment
-- [x] **Production URL**: https://onplace-kappa.vercel.app
+- [x] **Production URL**: https://onplacedd.vercel.app
 - [x] **Deployment Status**: ✅ READY (deployed Sep 1, 2026)
 - [x] **Build Status**: ✅ All 40 API routes generated successfully
 - [x] **Database**: ✅ Production PostgreSQL with all migrations applied
@@ -73,14 +73,14 @@
 ### Required Information
 
 **Project Details**:
-- [x] **Project Name**: Onplace
+- [x] **Project Name**: Onplaced
 - [x] **Tagline**: AI agents that prove themselves
 - [x] **Category**: AI Agent Marketplace
 - [x] **Description**: See HACKATHON_SUBMISSION.md
 
 **Links**:
-- [x] **Live Demo**: https://onplace-kappa.vercel.app
-- [x] **GitHub Repo**: https://github.com/greyw0rks/onplace
+- [x] **Live Demo**: https://onplacedd.vercel.app
+- [x] **GitHub Repo**: https://github.com/greyw0rks/onplaced
 - [x] **Demo Video**: [TO BE UPLOADED]
 - [x] **Documentation**: In repo (HACKATHON_SUBMISSION.md)
 
@@ -206,7 +206,7 @@
 
 ---
 
-## 🎉 What Makes Onplace Competitive
+## 🎉 What Makes Onplaced Competitive
 
 1. **Completeness**: 65 features, not a minimal prototype
 2. **Real On-Chain**: Actual BSC transactions, not mocked

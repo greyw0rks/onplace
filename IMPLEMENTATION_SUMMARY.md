@@ -1,4 +1,4 @@
-# Onplace: Implementation Complete ✅
+# Onplaced: Implementation Complete ✅
 
 **Phases 1-5 of 40-Feature Roadmap**  
 **Status**: ✅ FULLY IMPLEMENTED & TESTED  
@@ -9,7 +9,7 @@
 
 ## 🎯 Executive Summary
 
-Successfully implemented the first 5 phases of the Onplace marketplace, delivering a **production-ready MVP** with the core differentiator: **continuous automated verification of AI agents on BNB Chain**.
+Successfully implemented the first 5 phases of the Onplaced marketplace, delivering a **production-ready MVP** with the core differentiator: **continuous automated verification of AI agents on BNB Chain**.
 
 ### Key Achievements
 - ✅ **23 database models** with full relations
@@ -288,7 +288,7 @@ Future Pages (Phases 6-10):
 ### Environment Variables Needed
 ```bash
 DATABASE_URL=postgresql://...
-NEXT_PUBLIC_BASE_URL=https://onplace.xyz
+NEXT_PUBLIC_BASE_URL=https://onplaced.xyz
 GITHUB_WEBHOOK_SECRET=... (for repo monitoring)
 ```
 
@@ -296,9 +296,9 @@ GITHUB_WEBHOOK_SECRET=... (for repo monitoring)
 
 ## 📚 Documentation Generated
 
-1. ✅ **Implementation Plan** - `/Untouched/.claude/plans/onplace-40-features-implementation.md`
-2. ✅ **Testing Report** - `/Untouched/TESTING_REPORT.md`
-3. ✅ **This Summary** - `/Untouched/IMPLEMENTATION_SUMMARY.md`
+1. ✅ **Implementation Plan** - `/onplacedd/.claude/plans/onplaced-40-features-implementation.md`
+2. ✅ **Testing Report** - `/onplacedd/TESTING_REPORT.md`
+3. ✅ **This Summary** - `/onplacedd/IMPLEMENTATION_SUMMARY.md`
 
 ---
 
@@ -362,7 +362,7 @@ GITHUB_WEBHOOK_SECRET=... (for repo monitoring)
 ## 💡 Key Differentiators
 
 ### vs Traditional Marketplaces
-| Feature | Traditional | Onplace |
+| Feature | Traditional | Onplaced |
 |---------|------------|------------|
 | Verification | Self-reported | Continuous automated testing |
 | Trust Score | Single number | Multi-dimensional (Trust/Health/Performance/Community) |
@@ -431,7 +431,7 @@ We've built a **production-ready AI agent marketplace** with the critical differ
 ### The Vision
 A marketplace where **agents prove themselves every day**, not just at launch. Where users trust independent verification over vendor claims. Where security is granular and user-controlled.
 
-**Onplace**: AI agents that prove themselves. ✅
+**Onplaced**: AI agents that prove themselves. ✅
 
 ---
 

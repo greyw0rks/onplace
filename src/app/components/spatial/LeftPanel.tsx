@@ -24,7 +24,7 @@ export function LeftPanel({ children }: LeftPanelProps) {
     <div className="flex flex-col h-full">
       {/* Top Navigation Strip */}
       <div className="flex items-center gap-6 px-8 pt-8 pb-4 border-b border-black/10">
-        <Link href="/" aria-label="Onplace home" className="text-[#111111]">
+        <Link href="/" aria-label="Onplaced home" className="text-[#111111]">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
             <path d="M12 6v6l4 2" />

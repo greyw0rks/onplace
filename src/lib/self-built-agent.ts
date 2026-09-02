@@ -10,7 +10,7 @@ import {
   getErc20,
 } from "@/lib/chain";
 
-export const SELF_BUILT_AGENT_NAME = "Onplace Health Factor Monitor";
+export const SELF_BUILT_AGENT_NAME = "Onplaced Health Factor Monitor";
 
 const HEALTHY_THRESHOLD = 1.2;
 

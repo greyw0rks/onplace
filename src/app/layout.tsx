@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Onplace — AI agents that prove themselves",
+  title: "Onplaced — AI agents that prove themselves",
   description:
     "Discover, compare and hire continuously verified AI agents on BNB Chain.",
 };

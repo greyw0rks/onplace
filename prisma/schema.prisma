@@ -250,13 +250,13 @@ model TrustCalculation {
   agent       Agent    @relation(fields: [agentId], references: [id], name: "trustCalculations")
   calculatedAt DateTime @default(now())
 
-  // Onplace component (60%)
+  // Onplaced component (60%)
   benchmarkScore    Float
   reliabilityScore  Float
   securityScore     Float
   versionStability  Float
   recentPerformance Float
-  onplaceTotal      Float
+  onplacedTotal     Float
 
   // Community component (40%)
   verifiedRatings   Float

@@ -1,14 +1,14 @@
-# Onplace
+# Onplaced
 
 **AI agents that prove themselves.**
 
-A continuously-verified AI agent marketplace on BNB Smart Chain. Onplace answers a
+A continuously-verified AI agent marketplace on BNB Smart Chain. Onplaced answers a
 question the agent economy currently can't: with 200,000+ agents registered under
 ERC-8004 on BSC, how do you find one you can actually trust?
 
 | | |
 |---|---|
-| Live demo | https://onplace-kappa.vercel.app |
+| Live demo | https://onplacedd.vercel.app |
 | Chain | BNB Smart Chain Testnet (chain id 97) |
 | Verification contract | [`0xdf1e56cf7bd6C29AB1325026fb3e4679511203b7`](https://testnet.bscscan.com/address/0xdf1e56cf7bd6C29AB1325026fb3e4679511203b7) |
 | Identity registry | ERC-8004 `0x8004a818bfb912233c491871b3d84c89a494bd9e` |
@@ -20,7 +20,7 @@ ERC-8004 on BSC, how do you find one you can actually trust?
 
 Most agent directories show you vanity numbers — install counts, star ratings, a
 self-reported description. None of that tells you whether the agent still works
-today. Onplace treats trust as something an agent earns continuously rather than a
+today. Onplaced treats trust as something an agent earns continuously rather than a
 badge it gets once at listing time.
 
 Every listed agent is re-tested on a schedule, and each run's result is written to
@@ -29,7 +29,7 @@ marketing copy.
 
 **Trust Score = 60% independent verification + 40% community reputation**
 
-The 60% Onplace component is itself broken out, so nothing is a black box:
+The 60% Onplaced component is itself broken out, so nothing is a black box:
 
 | Sub-score | Weight |
 |---|---|
@@ -45,12 +45,12 @@ actually hired the agent.
 
 ---
 
-## Onplace verifies itself
+## Onplaced verifies itself
 
-The clearest way to show the verification loop is real: Onplace runs its own agent
+The clearest way to show the verification loop is real: Onplaced runs its own agent
 through it.
 
-**Onplace Health Factor Monitor** holds a live Venus Protocol position on BSC testnet
+**Onplaced Health Factor Monitor** holds a live Venus Protocol position on BSC testnet
 (tBNB supplied into vBNB, USDT borrowed against it). On each run it reads
 `Comptroller.getAssetsIn`, per-market `getAccountSnapshot` / `collateralFactor`, and
 the Venus oracle price, then computes a real collateral-adjusted health factor — not
@@ -141,7 +141,7 @@ docs/               product specification
 
 ## Status
 
-Onplace was built for the BNB Chain "Build the Era" hackathon and runs against BSC
+Onplaced was built for the BNB Chain "Build the Era" hackathon and runs against BSC
 **testnet**. The verification loop, trust scoring, discovery and comparison surfaces
 are implemented and live at the demo URL. The Jest suite currently does not run — the
 generated Prisma client uses `import.meta`, which the project's Jest transform can't

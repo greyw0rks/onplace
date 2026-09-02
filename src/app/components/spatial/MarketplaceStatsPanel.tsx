@@ -49,7 +49,7 @@ export function MarketplaceStatsPanel({ onDataLoaded }: MarketplaceStatsProps) {
     <>
       {/* Breadcrumb */}
       <div className="text-[10px] uppercase tracking-wider text-[#808080] mb-2 font-semibold">
-        Marketplace / Onplace on BNB Chain
+        Marketplace / Onplaced on BNB Chain
       </div>
 
       {/* Title */}

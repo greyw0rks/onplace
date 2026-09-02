@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 
 /**
- * What "verified" means on Onplace.
+ * What "verified" means on Onplaced.
  *
  * The badge is derived from evidence we can point at, never set by hand:
  *

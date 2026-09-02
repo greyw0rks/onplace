@@ -22,7 +22,7 @@ export async function GET(
     return NextResponse.json({ error: "Agent not found" }, { status: 404 });
   }
 
-  // Trust Score (60% Onplace + 40% Community)
+  // Trust Score (60% Onplaced + 40% Community)
   const trustScore = trustScoreOf(agent);
 
   // Health Score (current operational status)
@@ -57,7 +57,7 @@ export async function GET(
     },
     breakdown: {
       trust: {
-        onplace: trustScore * 0.6,
+        onplaced: trustScore * 0.6,
         community: trustScore * 0.4,
       },
       health: {

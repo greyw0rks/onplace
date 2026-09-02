@@ -1,8 +1,8 @@
-# Onplace - Complete Integration Test Plan
+# Onplaced - Complete Integration Test Plan
 
 ## Test Execution Guide
 
-This document outlines comprehensive integration tests for all 10 phases of Onplace.
+This document outlines comprehensive integration tests for all 10 phases of Onplaced.
 
 ---
 
@@ -169,7 +169,7 @@ curl -X POST "http://localhost:3000/api/sessions/SESSION_ID/revoke"
 curl -X POST "http://localhost:3000/api/agents/AGENT_ID/trust"
 ```
 **Expected**: calculation object with:
-- Onplace component (60%): benchmark, reliability, security, version stability, recent performance
+- Onplaced component (60%): benchmark, reliability, security, version stability, recent performance
 - Community component (40%): verified ratings, user success, retention, review quality, usage reputation
 - finalTrustScore (0-100)
 
@@ -439,7 +439,7 @@ curl -X POST "http://localhost:3000/api/recommendations" \
    - User leaves 5-star review
    - Review verified (from actual hire)
    - Community score increases
-   - Trust = onplace * 0.6 + community * 0.4 increases
+   - Trust = onplaced * 0.6 + community * 0.4 increases
 
 4. **Sybil attempts detected:**
    - New user leaves identical reviews on all agents

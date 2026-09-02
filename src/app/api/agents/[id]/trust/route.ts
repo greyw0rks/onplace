@@ -23,14 +23,14 @@ export async function POST(
     return NextResponse.json({ error: "Agent not found" }, { status: 404 });
   }
 
-  // Onplace Component (60%)
+  // Onplaced Component (60%)
   const benchmarkScore = calculateBenchmarkScore(agent.testResults);
   const reliabilityScore = calculateReliabilityScore(agent.healthChecks);
   const securityScore = calculateSecurityScore(agent.securityAudits);
   const versionStability = calculateVersionStability(agent.versions);
   const recentPerformance = calculateRecentPerformance(agent.testResults.slice(0, 10));
 
-  const onplaceTotal = (
+  const onplacedTotal = (
     benchmarkScore * 0.3 +
     reliabilityScore * 0.25 +
     securityScore * 0.2 +
@@ -54,7 +54,7 @@ export async function POST(
   );
 
   // Final Trust Score
-  const finalTrustScore = onplaceTotal * 0.6 + communityTotal * 0.4;
+  const finalTrustScore = onplacedTotal * 0.6 + communityTotal * 0.4;
 
   const calculation = await prisma.trustCalculation.create({
     data: {
@@ -64,7 +64,7 @@ export async function POST(
       securityScore,
       versionStability,
       recentPerformance,
-      onplaceTotal,
+      onplacedTotal,
       verifiedRatings,
       userSuccess,
       retention,
