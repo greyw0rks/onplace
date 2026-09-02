@@ -1,4 +1,4 @@
-# AgentProof: ALL 10 PHASES COMPLETE ✅
+# Onplace: ALL 10 PHASES COMPLETE ✅
 
 **Full 40-Feature Roadmap Implementation**  
 **Status**: ✅ 100% COMPLETE  
@@ -9,7 +9,7 @@
 
 ## 🎯 Mission Accomplished
 
-Successfully implemented **ALL 10 PHASES** of the AgentProof marketplace, delivering a **complete, production-ready AI agent marketplace** with continuous automated verification on BNB Chain.
+Successfully implemented **ALL 10 PHASES** of the Onplace marketplace, delivering a **complete, production-ready AI agent marketplace** with continuous automated verification on BNB Chain.
 
 ### Complete Feature Count
 - ✅ **Phase 1-5**: 40/40 features ✅ COMPLETE
@@ -61,7 +61,7 @@ Successfully implemented **ALL 10 PHASES** of the AgentProof marketplace, delive
 - `/api/users/reputation` - Calculate and update user reputation
 
 **Key algorithms:**
-- **AgentProof component (60%)**: Benchmark 30%, Reliability 25%, Security 20%, Version Stability 15%, Recent Performance 10%
+- **Onplace component (60%)**: Benchmark 30%, Reliability 25%, Security 20%, Version Stability 15%, Recent Performance 10%
 - **Community component (40%)**: Verified Ratings 35%, User Success 25%, Retention 20%, Review Quality 10%, Usage Reputation 10%
 - **Sybil detection**: 5 indicators (rapid burst, all positive, no diversity, review without hire, identical patterns) → confidence score → action (NONE/FLAG/WEIGHT_REDUCE/BAN)
 
@@ -227,7 +227,7 @@ Successfully implemented **ALL 10 PHASES** of the AgentProof marketplace, delive
 ## 🎯 Key Differentiators (Complete)
 
 ### vs Traditional Marketplaces
-| Feature | Traditional | AgentProof (Complete) |
+| Feature | Traditional | Onplace (Complete) |
 |---------|------------|----------------------|
 | Verification | Self-reported | ✅ Continuous automated + Sybil detection |
 | Trust Score | Single number | ✅ Multi-dimensional (10 sub-scores, 60/40 split) |
@@ -347,7 +347,7 @@ Successfully implemented **ALL 10 PHASES** of the AgentProof marketplace, delive
 ```bash
 # Required
 DATABASE_URL=postgresql://...
-NEXT_PUBLIC_BASE_URL=https://agentproof.xyz
+NEXT_PUBLIC_BASE_URL=https://onplace.xyz
 
 # Optional but recommended
 REDIS_URL=redis://...
@@ -398,7 +398,7 @@ SENTRY_DSN=...
 
 ---
 
-## 💡 What Makes AgentProof Unique
+## 💡 What Makes Onplace Unique
 
 ### Complete Protection Stack
 1. **Continuous Testing** - Agents prove themselves daily
@@ -466,7 +466,7 @@ We've built a **comprehensive, production-ready AI agent marketplace** with:
 
 A marketplace where **agents prove themselves every day**, not just at launch. Where **users trust independent verification** over vendor claims. Where **security is granular and user-controlled**. Where **manipulation is detected and prevented**. Where **developers get actionable insights**. Where **users discover the right agents** through personalized recommendations.
 
-**AgentProof**: AI agents that prove themselves. ✅
+**Onplace**: AI agents that prove themselves. ✅
 
 ---
 

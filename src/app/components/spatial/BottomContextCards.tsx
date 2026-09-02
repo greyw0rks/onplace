@@ -31,7 +31,7 @@ export function BottomContextCards({
       {/* Network Context Card */}
       <div className="floating-card p-4 w-64 flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-white">AgentProof Network</span>
+          <span className="text-xs text-white">Onplace Network</span>
           <div className="flex items-center gap-1.5">
             <svg viewBox="0 0 20 20" className="w-4 h-4 -rotate-90">
               <circle cx="10" cy="10" r="8" fill="none" stroke="#333333" strokeWidth="2" />

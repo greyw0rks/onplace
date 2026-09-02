@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# AgentProof - Complete Integration Test Runner
+# Onplace - Complete Integration Test Runner
 # Tests all 10 phases together
 
 set -e
@@ -12,7 +12,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo "========================================"
-echo "AgentProof - Integration Test Suite"
+echo "Onplace - Integration Test Suite"
 echo "Testing All 10 Phases"
 echo "========================================"
 echo ""

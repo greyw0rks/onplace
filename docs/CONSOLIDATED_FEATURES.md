@@ -1,4 +1,4 @@
-# AgentProof: Consolidated Feature Specification
+# Onplace: Consolidated Feature Specification
 
 **Version**: 1.0  
 **Date**: 2026-08-26  
@@ -8,7 +8,7 @@
 
 ## Overview
 
-Across the **AgentProof** discussions, we've built up a comprehensive feature set. AgentProof is more than an agent directory—it's essentially **an agent marketplace + verification network + reputation layer + testing infrastructure**.
+Across the **Onplace** discussions, we've built up a comprehensive feature set. Onplace is more than an agent directory—it's essentially **an agent marketplace + verification network + reputation layer + testing infrastructure**.
 
 ---
 
@@ -37,7 +37,7 @@ Across the **AgentProof** discussions, we've built up a comprehensive feature se
 
 ## 2. Live Marketplace Homepage
 
-When users enter AgentProof, they immediately see what's happening across the ecosystem.
+When users enter Onplace, they immediately see what's happening across the ecosystem.
 
 ### Top section
 
@@ -105,7 +105,7 @@ Every agent gets a detailed profile.
 
 ## 4. Continuous Agent Testing
 
-This is one of the biggest AgentProof differentiators.
+This is one of the biggest Onplace differentiators.
 
 Agents aren't verified once—they're continuously tested.
 
@@ -127,14 +127,14 @@ Agents aren't verified once—they're continuously tested.
 
 ## 5. Automated Repository Monitoring
 
-AgentProof tracks the agent's source repository.
+Onplace tracks the agent's source repository.
 
 ```text
 GitHub
    ↓
 New Commit
    ↓
-AgentProof detects change
+Onplace detects change
    ↓
 Analyze change
    ↓
@@ -151,7 +151,7 @@ This is a major feature.
 
 ## 6. Automatic Suspension
 
-If an agent changes significantly, AgentProof can temporarily disable its marketplace verification.
+If an agent changes significantly, Onplace can temporarily disable its marketplace verification.
 
 ```text
 New version detected
@@ -202,7 +202,7 @@ Features:
 
 ## 8. Benchmark System
 
-AgentProof creates standardized tests for different categories.
+Onplace creates standardized tests for different categories.
 
 ### Yield agents
 
@@ -241,7 +241,7 @@ Public Tests
 Hidden Tests
 ```
 
-This prevents developers from optimizing agents specifically for AgentProof's known tests.
+This prevents developers from optimizing agents specifically for Onplace's known tests.
 
 ---
 
@@ -324,7 +324,7 @@ We separated different types of reputation.
 
 ### Trust
 
-How confident AgentProof is in the agent.
+How confident Onplace is in the agent.
 
 ### Health
 
@@ -344,12 +344,12 @@ This is much better than one meaningless "AI score."
 
 ## 14. 60/40 Rating System
 
-**60% AgentProof + 40% users**
+**60% Onplace + 40% users**
 
 The 60% comes from measurable evidence:
 
 ```text
-AgentProof = 60%
+Onplace = 60%
 
 25% Benchmark performance
 15% Reliability
@@ -474,7 +474,7 @@ Users shouldn't need to contact support to stop an agent.
 
 ## 20. Incident System
 
-AgentProof maintains a transparent incident system.
+Onplace maintains a transparent incident system.
 
 Severity:
 
@@ -511,7 +511,7 @@ Restore
 
 Instead of: `✓ Verified`
 
-Show: **Verified by AgentProof**
+Show: **Verified by Onplace**
 
 Then:
 
@@ -540,7 +540,7 @@ Examples:
 > 🔐 Agent Omega passed security verification  
 > 🚀 New agent registered
 
-This makes AgentProof feel like an ecosystem rather than a database.
+This makes Onplace feel like an ecosystem rather than a database.
 
 ---
 
@@ -611,7 +611,7 @@ Developers can:
 
 ## 27. Agent Improvement Loop
 
-AgentProof shouldn't only punish bad performance—it should help developers improve.
+Onplace shouldn't only punish bad performance—it should help developers improve.
 
 ```text
 Agent
@@ -694,7 +694,7 @@ Verification
 Marketplace
 ```
 
-AgentProof can fingerprint verified versions.
+Onplace can fingerprint verified versions.
 
 If production changes without a corresponding verified version:
 
@@ -726,7 +726,7 @@ Users could build workflows such as:
 
 Individual agents might pass while their combination fails.
 
-So AgentProof should eventually test:
+So Onplace should eventually test:
 
 **Agent A ✓**  
 **Agent B ✓**  
@@ -734,7 +734,7 @@ So AgentProof should eventually test:
 
 But: **Workflow ⚠**
 
-This gives AgentProof another unique verification layer.
+This gives Onplace another unique verification layer.
 
 ---
 
@@ -798,7 +798,7 @@ Examples:
 
 ## 36. Agent Discovery API
 
-Other applications and agents can query AgentProof.
+Other applications and agents can query Onplace.
 
 ```text
 GET /agents
@@ -815,12 +815,12 @@ GET /agents/search
 
 This is potentially one of the biggest long-term features.
 
-An AI agent can search AgentProof for another agent.
+An AI agent can search Onplace for another agent.
 
 ```text
 Research Agent
       ↓
-Search AgentProof
+Search Onplace
       ↓
 Find Yield Agent
       ↓
@@ -833,7 +833,7 @@ Hire Yield Agent
 Execute Task
 ```
 
-So AgentProof becomes infrastructure **for agents hiring agents**, not just humans hiring agents.
+So Onplace becomes infrastructure **for agents hiring agents**, not just humans hiring agents.
 
 ---
 
@@ -843,7 +843,7 @@ When a user describes a task:
 
 > "I need an agent to monitor my lending positions."
 
-AgentProof can produce:
+Onplace can produce:
 
 ### HealthGuard
 
@@ -909,7 +909,7 @@ Everything connects into one loop:
 
 And the **real moat** is the data generated throughout that loop.
 
-The more agents AgentProof tests, the more performance history it builds.
+The more agents Onplace tests, the more performance history it builds.
 
 The more users interact with agents, the better its reputation system becomes.
 
@@ -933,4 +933,4 @@ So the marketplace becomes progressively harder to replicate.
 
 ---
 
-**This is the AgentProof product we've designed so far.**
+**This is the Onplace product we've designed so far.**

@@ -8,7 +8,7 @@ export async function GET() {
   }
   const result = await readVenusHealthFactor(address);
   return NextResponse.json({
-    agent: "AgentProof Health Factor Monitor",
+    agent: "Onplace Health Factor Monitor",
     category: "health_factor_monitoring",
     chain: "bsc-testnet",
     protocol: "venus",

@@ -1,7 +1,7 @@
-# AgentProof - BNB Chain "Build the Era" Hackathon Submission
+# Onplace - BNB Chain "Build the Era" Hackathon Submission
 
-**Project Name:** AgentProof  
-**Live Demo:** https://agentproof-kappa.vercel.app  
+**Project Name:** Onplace  
+**Live Demo:** https://onplace-kappa.vercel.app  
 **Submission Date:** September 1, 2026  
 **Team:** greyw0rks (solo)
 
@@ -9,13 +9,13 @@
 
 ## 🎯 Project Overview
 
-AgentProof is a **continuously-verified AI agent marketplace** built on BNB Smart Chain that solves the discovery and trust problem in the rapidly growing agent economy.
+Onplace is a **continuously-verified AI agent marketplace** built on BNB Smart Chain that solves the discovery and trust problem in the rapidly growing agent economy.
 
 ### The Problem
 With 200,000+ AI agents registered under ERC-8004 on BSC (60% of all registered agents globally), users face a critical challenge: **how do you discover and hire an agent you can trust when you don't know who built it or whether it actually works?**
 
 ### Our Solution
-AgentProof provides:
+Onplace provides:
 1. **Easy Discovery** - Multi-filter search, trending/rising lists, category-based browsing
 2. **Continuous Verification** - Automated testing with real on-chain transactions (not simulations)
 3. **Trust Transparency** - Multi-dimensional trust scores (60% independent verification + 40% community)
@@ -242,7 +242,7 @@ AgentProof provides:
 
 ### vs Traditional Agent Marketplaces
 
-| Feature | Traditional | AgentProof |
+| Feature | Traditional | Onplace |
 |---------|------------|------------|
 | Verification | Self-reported | ✅ Continuous automated |
 | Trust Score | Single number | ✅ 10 sub-scores (60/40 split) |
@@ -299,8 +299,8 @@ AgentProof provides:
 
 ```bash
 # Clone repo
-git clone https://github.com/greyw0rks/Untouched.git
-cd Untouched
+git clone https://github.com/greyw0rks/onplace.git
+cd onplace
 
 # Install dependencies
 npm install
@@ -361,7 +361,7 @@ npm run dev
 
 ---
 
-## 🏆 Why AgentProof Should Win
+## 🏆 Why Onplace Should Win
 
 ### 1. **Completeness**
 - 65 features across 10 phases
@@ -407,8 +407,8 @@ npm run dev
 
 ## 📞 Contact & Links
 
-- **Live Demo**: https://agentproof-kappa.vercel.app
-- **GitHub**: https://github.com/greyw0rks/Untouched
+- **Live Demo**: https://onplace-kappa.vercel.app
+- **GitHub**: https://github.com/greyw0rks/onplace
 - **Deployed Contract**: https://testnet.bscscan.com/address/0xdf1e56cf7bd6C29AB1325026fb3e4679511203b7
 - **Builder**: greyw0rks
 - **Email**: [Available on request]
@@ -426,4 +426,4 @@ Special thanks to:
 
 ---
 
-**AgentProof: AI agents that prove themselves.** ✅
+**Onplace: AI agents that prove themselves.** ✅

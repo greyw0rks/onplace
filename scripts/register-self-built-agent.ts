@@ -4,13 +4,13 @@ import { getRelayerWallet, getIdentityRegistry, IDENTITY_REGISTRY_ADDRESS } from
 import { prisma } from "../src/lib/db";
 
 const AGENT_CARD = {
-  name: "AgentProof Health Factor Monitor",
+  name: "Onplace Health Factor Monitor",
   description:
-    "Self-built AgentProof agent that monitors a wallet's testnet BNB balance and reports a health signal, submitting a real feedback transaction to the ERC-8004 Reputation Registry each run.",
+    "Self-built Onplace agent that monitors a wallet's testnet BNB balance and reports a health signal, submitting a real feedback transaction to the ERC-8004 Reputation Registry each run.",
   endpoints: [
     {
       name: "monitor",
-      endpoint: "https://agentproof.example/api/agents/self-built/health-factor-monitor",
+      endpoint: "https://onplace.example/api/agents/self-built/health-factor-monitor",
       version: "0.1.0",
     },
   ],
@@ -53,8 +53,8 @@ async function main() {
       erc8004Id,
       name: AGENT_CARD.name,
       description: AGENT_CARD.description,
-      developer: "AgentProof",
-      endpointUrl: "https://agentproof.example/api/agents/self-built/health-factor-monitor",
+      developer: "Onplace",
+      endpointUrl: "https://onplace.example/api/agents/self-built/health-factor-monitor",
       chain: "bsc-testnet",
       walletAddress: await wallet.getAddress(),
       sourceType: "self_built",

@@ -1,4 +1,4 @@
-# AgentProof: Final Delivery Summary 🎉
+# Onplace: Final Delivery Summary 🎉
 
 **Complete AI Agent Marketplace with Continuous Verification**  
 **Date**: August 26, 2026  
@@ -164,9 +164,9 @@ Testing:     Jest + Custom Integration Suite
 
 ### 1. Enhanced Trust Score Calculation
 ```
-Trust Score = AgentProof (60%) + Community (40%)
+Trust Score = Onplace (60%) + Community (40%)
 
-AgentProof Component:
+Onplace Component:
   - Benchmark Score: 30%
   - Reliability Score: 25%
   - Security Score: 20%
@@ -342,8 +342,8 @@ prisma/
 ### Configuration Required
 ```bash
 # Essential
-DATABASE_URL=postgresql://user:pass@host:5432/agentproof
-NEXT_PUBLIC_BASE_URL=https://agentproof.xyz
+DATABASE_URL=postgresql://user:pass@host:5432/onplace
+NEXT_PUBLIC_BASE_URL=https://onplace.xyz
 
 # Optional (recommended)
 REDIS_URL=redis://localhost:6379
@@ -534,4 +534,4 @@ Scaling Considerations:
 **Status**: ✅ PRODUCTION READY  
 **Quality**: ✅ ENTERPRISE GRADE  
 
-**AgentProof: AI agents that prove themselves.** ✅
+**Onplace: AI agents that prove themselves.** ✅

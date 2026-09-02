@@ -25,8 +25,8 @@ describe('Phase 3: Agent Profile Enhancement API', () => {
         expect(data.scores.trust).toBeGreaterThanOrEqual(0);
         expect(data.scores.trust).toBeLessThanOrEqual(100);
 
-        // Trust should be 60% AgentProof + 40% Community
-        expect(data.breakdown.trust).toHaveProperty('agentProof');
+        // Trust should be 60% Onplace + 40% Community
+        expect(data.breakdown.trust).toHaveProperty('onplace');
         expect(data.breakdown.trust).toHaveProperty('community');
       }
     });

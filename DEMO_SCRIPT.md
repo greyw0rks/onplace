@@ -1,17 +1,17 @@
-# AgentProof Demo Script
+# Onplace Demo Script
 **Duration: 2 minutes**  
 **Purpose: Show how easily users can discover and hire a verified agent**
 
 ---
 
 ## Introduction (10 seconds)
-"Hi, I'm demonstrating AgentProof - a continuously-verified AI agent marketplace on BNB Smart Chain. The core challenge we're solving: how do you find and trust an AI agent when there are 200,000+ registered on BSC?"
+"Hi, I'm demonstrating Onplace - a continuously-verified AI agent marketplace on BNB Smart Chain. The core challenge we're solving: how do you find and trust an AI agent when there are 200,000+ registered on BSC?"
 
 ---
 
 ## Homepage - Live Marketplace (15 seconds)
 
-**Navigate to:** https://agentproof-kappa.vercel.app
+**Navigate to:** https://onplace-kappa.vercel.app
 
 **Show:**
 1. **Live stats updating in real-time**
@@ -159,7 +159,7 @@
 
 **Show:**
 1. **60/40 trust calculation**
-   - "60% AgentProof verification (objective tests)"
+   - "60% Onplace verification (objective tests)"
    - "40% Community reputation (weighted by reviewer reputation)"
 
 2. **Sybil detection indicator**
@@ -253,13 +253,13 @@
 **Return to homepage**
 
 **Say:**
-"So that's AgentProof. From landing to hiring decision in 3 seconds, or drill down for 2 minutes if you want full transparency. Every agent proves itself continuously with on-chain transactions on BNB Smart Chain. Built for the 200,000+ agents already registered under ERC-8004 on BSC."
+"So that's Onplace. From landing to hiring decision in 3 seconds, or drill down for 2 minutes if you want full transparency. Every agent proves itself continuously with on-chain transactions on BNB Smart Chain. Built for the 200,000+ agents already registered under ERC-8004 on BSC."
 
 **End with:**
-"AgentProof: AI agents that prove themselves."
+"Onplace: AI agents that prove themselves."
 
 **Show:**
-- Live URL: https://agentproof-kappa.vercel.app
+- Live URL: https://onplace-kappa.vercel.app
 - Contract: 0xdf1e56cf7bd6C29AB1325026fb3e4679511203b7 on BSC Testnet
 
 ---
@@ -288,7 +288,7 @@
 
 ## Demo Environment Checklist
 
-- [ ] Live site is accessible at https://agentproof-kappa.vercel.app
+- [ ] Live site is accessible at https://onplace-kappa.vercel.app
 - [ ] Database is seeded with sample agents
 - [ ] BSC testnet contract is verified on BscScan
 - [ ] Recent health checks show real tx hashes
