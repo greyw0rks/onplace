@@ -83,11 +83,34 @@ export async function checkAgentHealth(agentId: string) {
   return { agentId, ...result, uptimePct };
 }
 
-export async function checkAllAgentsHealth() {
+/**
+ * Check every agent. Runs in bounded parallel batches — sequential checks take
+ * `agents × TIMEOUT_MS` in the worst case, which blows past a serverless
+ * function's time limit once the registry is more than a handful of agents.
+ */
+export async function checkAllAgentsHealth(concurrency = 8) {
   const agents = await prisma.agent.findMany({ select: { id: true } });
-  const results = [];
-  for (const agent of agents) {
-    results.push(await checkAgentHealth(agent.id));
+  const results: Array<Awaited<ReturnType<typeof checkAgentHealth>> | { agentId: string; success: false; latencyMs: null; error: string; uptimePct: null }> = [];
+
+  for (let i = 0; i < agents.length; i += concurrency) {
+    const batch = agents.slice(i, i + concurrency);
+    const settled = await Promise.allSettled(batch.map((a) => checkAgentHealth(a.id)));
+
+    settled.forEach((outcome, j) => {
+      if (outcome.status === "fulfilled") {
+        results.push(outcome.value);
+      } else {
+        // One agent failing to record shouldn't abort the whole sweep.
+        results.push({
+          agentId: batch[j].id,
+          success: false,
+          latencyMs: null,
+          error: outcome.reason instanceof Error ? outcome.reason.message : "check failed",
+          uptimePct: null,
+        });
+      }
+    });
   }
+
   return results;
 }

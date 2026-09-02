@@ -24,6 +24,21 @@ enum AgentSourceType {
   self_built
 }
 
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum SecurityLevel {
+  NOT_AUDITED
+  BASIC
+  STANDARD
+  COMPREHENSIVE
+  CRITICAL
+}
+
 model Category {
   slug        CategorySlug @id
   name        String
@@ -52,11 +67,56 @@ model Agent {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
+  // Phase 1: Enhanced Discovery
+  capabilities     String[]
+  supportedChains  String[]
+  supportedProtocols String[]
+  riskLevel        RiskLevel       @default(MEDIUM)
+  performanceScore Float?
+  healthScore      Float?
+  communityScore   Float?
+  verified         Boolean         @default(false)
+  verifiedAt       DateTime?
+  featured         Boolean         @default(false)
+  trendingScore    Float?
+  viewCount        Int             @default(0)
+  hireCount        Int             @default(0)
+
+  // Phase 3: Profile Enhancement
+  logoUrl          String?
+  bannerUrl        String?
+  websiteUrl       String?
+  documentationUrl String?
+  githubUrl        String?
+  twitterHandle    String?
+  currentVersion   String?
+  securityLevel    SecurityLevel?
+  lastSecurityAudit DateTime?
+  followCount      Int             @default(0)
+
   healthChecks HealthCheck[]
   hires        Hire[]
   reviews      Review[]
+  followers    UserFollow[]
+  activities   MarketplaceActivity[] @relation("activities")
+  battleResults AgentBattleResult[]  @relation("battleResults")
+  versions     AgentVersion[]
+  testResults  TestResult[]          @relation("testResults")
+  testSchedules TestSchedule[]       @relation("testSchedules")
+  gitRepository GitRepository?
+  securityAudits SecurityAudit[]     @relation("securityAudits")
+  permissionSpecs PermissionSpec[]   @relation("permissionSpecs")
+  trustCalculations TrustCalculation[] @relation("trustCalculations")
+  sandboxes    Sandbox[]             @relation("sandboxes")
+  revenueRecords RevenueRecord[]     @relation("revenueRecords")
+  pricingPlans PricingPlan[]         @relation("pricingPlans")
+  incidents    Incident[]            @relation("incidents")
+  recommendations Recommendation[]   @relation("recommendations")
 
   @@index([categorySlug])
+  @@index([verified, verifiedAt])
+  @@index([trendingScore])
+  @@index([featured])
 }
 
 model HealthCheck {
@@ -68,6 +128,10 @@ model HealthCheck {
   latencyMs  Int?
   error      String?
   txHash     String?
+
+  healthFactor       Float?
+  collateralValueUsd Float?
+  borrowValueUsd     Float?
 
   @@index([agentId, timestamp])
 }
@@ -83,6 +147,8 @@ model Hire {
   id         String     @id @default(cuid())
   agentId    String
   agent      Agent      @relation(fields: [agentId], references: [id])
+  userId     String?
+  user       User?      @relation(fields: [userId], references: [id])
   userWallet String?
   txHash     String?
   amount     String?
@@ -91,9 +157,11 @@ model Hire {
   resultData String?
   createdAt  DateTime   @default(now())
 
-  review Review?
+  review   Review?
+  sessions HireSession[]
 
   @@index([agentId])
+  @@index([userId])
 }
 
 model Review {
@@ -106,5 +174,695 @@ model Review {
   comment   String?
   createdAt DateTime @default(now())
 
+  // Phase 6: Enhanced Trust & Reputation
+  verified      Boolean  @default(false)
+  helpfulCount  Int      @default(0)
+  reportedCount Int      @default(0)
+  reviewerReputation Float?
+  weight        Float    @default(1.0)
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+
   @@index([agentId])
+  @@index([verified])
+}
+
+model User {
+  id            String   @id @default(cuid())
+  walletAddress String   @unique
+  reputation    Float    @default(50.0)
+  joinedAt      DateTime @default(now())
+
+  reviews       Review[]
+  hires         Hire[]
+  follows       UserFollow[]
+  reports       Report[]
+  comparisons   Comparison[]
+  notifications Notification[]
+  sandboxes     Sandbox[]
+  dashboard     Dashboard?
+  developerProfile DeveloperProfile?
+  workflows     Workflow[]
+  recommendations Recommendation[]
+
+  reviewCount   Int      @default(0)
+  hireCount     Int      @default(0)
+  suspiciousActivityScore Float @default(0.0)
+
+  @@index([walletAddress])
+  @@index([reputation])
+}
+
+enum ReportTargetType {
+  AGENT
+  REVIEW
+  USER
+}
+
+enum ReportStatus {
+  PENDING
+  INVESTIGATING
+  RESOLVED
+  DISMISSED
+}
+
+model Report {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id])
+  targetType  ReportTargetType
+  targetId    String
+  reason      String
+  details     String?
+  status      ReportStatus
+  reviewedAt  DateTime?
+  reviewedBy  String?
+  resolution  String?
+  createdAt   DateTime         @default(now())
+
+  @@index([targetType, targetId])
+  @@index([status, createdAt])
+}
+
+model TrustCalculation {
+  id          String   @id @default(cuid())
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id], name: "trustCalculations")
+  calculatedAt DateTime @default(now())
+
+  // AgentProof component (60%)
+  benchmarkScore    Float
+  reliabilityScore  Float
+  securityScore     Float
+  versionStability  Float
+  recentPerformance Float
+  agentProofTotal   Float
+
+  // Community component (40%)
+  verifiedRatings   Float
+  userSuccess       Float
+  retention         Float
+  reviewQuality     Float
+  usageReputation   Float
+  communityTotal    Float
+
+  finalTrustScore   Float
+
+  @@index([agentId, calculatedAt])
+}
+
+enum SybilAction {
+  NONE
+  FLAG
+  WEIGHT_REDUCE
+  BAN
+}
+
+model SybilDetection {
+  id          String      @id @default(cuid())
+  userId      String
+  detectedAt  DateTime    @default(now())
+  indicators  Json
+  confidence  Float
+  action      SybilAction
+
+  @@index([userId, detectedAt])
+  @@index([action])
+}
+
+// Phase 7: UX Enhancements
+
+model Comparison {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  agentIds    String[]
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+enum NotificationType {
+  AGENT_VERSION
+  TEST_FAILED
+  SECURITY_ALERT
+  HIRE_COMPLETED
+  REVIEW_RECEIVED
+  FOLLOW_UPDATE
+  PRICE_CHANGE
+  PERFORMANCE_CHANGE
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id])
+  type        NotificationType
+  title       String
+  message     String
+  metadata    Json?
+  read        Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+
+  @@index([userId, read, createdAt])
+}
+
+model Sandbox {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  agentId         String
+  agent           Agent    @relation(fields: [agentId], references: [id], name: "sandboxes")
+  portfolioState  Json
+  actions         Json[]
+  results         Json?
+  createdAt       DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([agentId])
+}
+
+model Dashboard {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  layout          Json?
+  widgets         Json?
+  preferences     Json?
+
+  @@index([userId])
+}
+
+// Phase 8: Developer Experience
+
+model DeveloperProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  agentCount      Int      @default(0)
+  totalRevenue    String   @default("0")
+  totalHires      Int      @default(0)
+  avgRating       Float?
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+}
+
+model RevenueRecord {
+  id          String   @id @default(cuid())
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id], name: "revenueRecords")
+  amount      String
+  asset       String
+  txHash      String?
+  recordedAt  DateTime @default(now())
+
+  @@index([agentId, recordedAt])
+}
+
+model TestFailureInsight {
+  id          String   @id @default(cuid())
+  testResultId String
+  testResult  TestResult @relation(fields: [testResultId], references: [id])
+  category    String
+  recommendation String
+  priority    Int
+  createdAt   DateTime @default(now())
+
+  @@index([testResultId])
+}
+
+// Phase 9: Advanced Features
+
+enum PricingModel {
+  FREE
+  PER_TASK
+  SUBSCRIPTION
+  USAGE_BASED
+  PERFORMANCE_BASED
+}
+
+model PricingPlan {
+  id          String       @id @default(cuid())
+  agentId     String
+  agent       Agent        @relation(fields: [agentId], references: [id], name: "pricingPlans")
+  model       PricingModel
+  basePrice   String?
+  currency    String       @default("BNB")
+  details     Json?
+
+  @@index([agentId])
+}
+
+enum IncidentSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+enum IncidentStatus {
+  DETECTED
+  INVESTIGATING
+  RESOLVED
+  FALSE_POSITIVE
+}
+
+model Incident {
+  id          String           @id @default(cuid())
+  agentId     String
+  agent       Agent            @relation(fields: [agentId], references: [id], name: "incidents")
+  severity    IncidentSeverity
+  status      IncidentStatus
+  title       String
+  description String
+  detectedAt  DateTime         @default(now())
+  resolvedAt  DateTime?
+
+  @@index([agentId, status])
+  @@index([severity, detectedAt])
+}
+
+// Phase 10: Future Features
+
+model Workflow {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  name        String
+  description String?
+  steps       Json
+  createdAt   DateTime @default(now())
+
+  executions  WorkflowExecution[]
+
+  @@index([userId, createdAt])
+}
+
+model WorkflowExecution {
+  id          String   @id @default(cuid())
+  workflowId  String
+  workflow    Workflow @relation(fields: [workflowId], references: [id])
+  status      String
+  results     Json?
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+
+  @@index([workflowId, startedAt])
+}
+
+model TrustGraph {
+  id          String   @id @default(cuid())
+  fromUserId  String
+  toAgentId   String
+  weight      Float
+  createdAt   DateTime @default(now())
+
+  @@unique([fromUserId, toAgentId])
+  @@index([toAgentId, weight])
+}
+
+model Recommendation {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id], name: "recommendations")
+  score       Float
+  reason      Json
+  createdAt   DateTime @default(now())
+
+  @@index([userId, score])
+  @@index([agentId])
+}
+
+model UserFollow {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, agentId])
+  @@index([userId])
+  @@index([agentId])
+}
+
+model SearchQuery {
+  id        String   @id @default(cuid())
+  userId    String?
+  query     String
+  filters   Json
+  resultCount Int
+  clickedAgentId String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([query])
+}
+
+enum ActivityType {
+  AGENT_REGISTERED
+  AGENT_VERIFIED
+  AGENT_HIRED
+  VERSION_RELEASED
+  PERFORMANCE_MILESTONE
+  SECURITY_INCIDENT
+  TEST_PASSED
+  BATTLE_COMPLETED
+}
+
+model MarketplaceActivity {
+  id          String       @id @default(cuid())
+  type        ActivityType
+  agentId     String?
+  agent       Agent?       @relation(fields: [agentId], references: [id], name: "activities")
+  title       String
+  description String?
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+
+  @@index([type, createdAt])
+  @@index([createdAt])
+}
+
+enum BattleStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model AgentBattle {
+  id          String              @id @default(cuid())
+  name        String
+  description String
+  category    CategorySlug
+  taskSpec    Json
+  status      BattleStatus
+  startedAt   DateTime
+  completedAt DateTime?
+
+  participants AgentBattleResult[]
+
+  @@index([status, startedAt])
+  @@index([category])
+}
+
+model AgentBattleResult {
+  id        String      @id @default(cuid())
+  battleId  String
+  battle    AgentBattle @relation(fields: [battleId], references: [id])
+  agentId   String
+  agent     Agent       @relation(fields: [agentId], references: [id], name: "battleResults")
+  score     Float
+  rank      Int
+  metadata  Json?
+
+  @@unique([battleId, agentId])
+  @@index([battleId, rank])
+}
+
+enum VersionStatus {
+  PENDING
+  TESTING
+  VERIFIED
+  FAILED
+  DEPRECATED
+}
+
+model AgentVersion {
+  id              String        @id @default(cuid())
+  agentId         String
+  agent           Agent         @relation(fields: [agentId], references: [id])
+  version         String
+  releaseNotes    String?
+  commitHash      String?
+  buildFingerprint String?
+  verificationStatus VersionStatus
+  performanceScore Float?
+  testsPassed     Int?
+  testsFailed     Int?
+  createdAt       DateTime      @default(now())
+  verifiedAt      DateTime?
+
+  testResults     TestResult[]
+
+  @@unique([agentId, version])
+  @@index([agentId, createdAt])
+  @@index([verificationStatus])
+}
+
+enum TestStatus {
+  PASSED
+  FAILED
+  TIMEOUT
+  ERROR
+  SKIPPED
+}
+
+model TestSuite {
+  id          String     @id @default(cuid())
+  name        String
+  category    CategorySlug
+  description String
+  hidden      Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+
+  testCases   TestCase[]
+  schedules   TestSchedule[]
+
+  @@index([category, hidden])
+}
+
+model TestCase {
+  id          String     @id @default(cuid())
+  suiteId     String
+  suite       TestSuite  @relation(fields: [suiteId], references: [id])
+  name        String
+  spec        Json
+  weight      Float      @default(1.0)
+  timeout     Int        @default(30000)
+
+  results     TestResult[]
+
+  @@index([suiteId])
+}
+
+model TestResult {
+  id          String     @id @default(cuid())
+  testCaseId  String
+  testCase    TestCase   @relation(fields: [testCaseId], references: [id])
+  agentId     String
+  agent       Agent      @relation(fields: [agentId], references: [id], name: "testResults")
+  versionId   String?
+  version     AgentVersion? @relation(fields: [versionId], references: [id])
+
+  status      TestStatus
+  score       Float?
+  latencyMs   Int?
+  error       String?
+  output      Json?
+  executedAt  DateTime   @default(now())
+
+  insights    TestFailureInsight[]
+
+  @@index([agentId, executedAt])
+  @@index([testCaseId, agentId])
+  @@index([status])
+}
+
+enum TestFrequency {
+  HOURLY
+  DAILY
+  WEEKLY
+  MONTHLY
+  ON_DEMAND
+}
+
+model TestSchedule {
+  id          String        @id @default(cuid())
+  agentId     String?
+  agent       Agent?        @relation(fields: [agentId], references: [id], name: "testSchedules")
+  suiteId     String?
+  suite       TestSuite?    @relation(fields: [suiteId], references: [id])
+  category    CategorySlug?
+  frequency   TestFrequency
+  enabled     Boolean       @default(true)
+  lastRun     DateTime?
+  nextRun     DateTime
+
+  @@index([enabled, nextRun])
+}
+
+enum ChangeRiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model GitRepository {
+  id          String      @id @default(cuid())
+  agentId     String      @unique
+  agent       Agent       @relation(fields: [agentId], references: [id])
+  repoUrl     String
+  branch      String      @default("main")
+  lastCommit  String?
+  lastCheck   DateTime?
+  webhookSecret String?
+
+  commits     GitCommit[]
+}
+
+model GitCommit {
+  id          String          @id @default(cuid())
+  repoId      String
+  repo        GitRepository   @relation(fields: [repoId], references: [id])
+  hash        String
+  message     String
+  author      String
+  timestamp   DateTime
+  analyzed    Boolean         @default(false)
+  riskLevel   ChangeRiskLevel?
+  changesSummary Json?
+
+  @@unique([repoId, hash])
+  @@index([repoId, timestamp])
+  @@index([analyzed])
+}
+
+enum FindingSeverity {
+  INFO
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model SecurityAudit {
+  id              String          @id @default(cuid())
+  agentId         String
+  agent           Agent           @relation(fields: [agentId], references: [id], name: "securityAudits")
+  auditedAt       DateTime        @default(now())
+  auditedBy       String?
+  securityLevel   SecurityLevel
+  permissionSpecId String
+  permissionSpec  PermissionSpec  @relation(fields: [permissionSpecId], references: [id])
+
+  findings        SecurityFinding[]
+
+  @@index([agentId, auditedAt])
+}
+
+model SecurityFinding {
+  id          String          @id @default(cuid())
+  auditId     String
+  audit       SecurityAudit   @relation(fields: [auditId], references: [id])
+  severity    FindingSeverity
+  category    String
+  title       String
+  description String
+  remediation String?
+  resolved    Boolean         @default(false)
+  resolvedAt  DateTime?
+
+  @@index([auditId, severity])
+}
+
+model PermissionSpec {
+  id          String         @id @default(cuid())
+  agentId     String
+  agent       Agent          @relation(fields: [agentId], references: [id], name: "permissionSpecs")
+  version     String
+
+  capabilities Capability[]
+  audits      SecurityAudit[]
+
+  @@unique([agentId, version])
+}
+
+enum CapabilityType {
+  READ_WALLET
+  READ_TRANSACTIONS
+  READ_MARKET_DATA
+  ANALYZE_PORTFOLIO
+  GENERATE_TRANSACTION
+  SIGN_TRANSACTION
+  EXECUTE_SWAP
+  TRANSFER_FUNDS
+  ACCESS_API
+  MODIFY_CONFIG
+}
+
+enum CapabilityLevel {
+  NONE
+  INFORMATION
+  READ
+  ANALYZE
+  PREPARE
+  EXECUTE
+  TRANSFER
+}
+
+model Capability {
+  id          String          @id @default(cuid())
+  specId      String
+  spec        PermissionSpec  @relation(fields: [specId], references: [id])
+  name        CapabilityType
+  level       CapabilityLevel
+  required    Boolean         @default(false)
+
+  @@index([specId, name])
+}
+
+enum SessionStatus {
+  ACTIVE
+  PAUSED
+  EXPIRED
+  REVOKED
+}
+
+model HireSession {
+  id              String        @id @default(cuid())
+  hireId          String
+  hire            Hire          @relation(fields: [hireId], references: [id])
+
+  maxTransactionAmount String?
+  dailySpendingLimit   String?
+  sessionSpendingLimit String?
+  allowedContracts     String[]
+  allowedActions       String[]
+
+  status          SessionStatus
+  startedAt       DateTime      @default(now())
+  expiresAt       DateTime
+  revokedAt       DateTime?
+
+  transactions    HireTransaction[]
+
+  @@index([hireId, status])
+}
+
+enum TxStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+  REVERTED
+}
+
+model HireTransaction {
+  id          String      @id @default(cuid())
+  sessionId   String
+  session     HireSession @relation(fields: [sessionId], references: [id])
+  txHash      String
+  amount      String
+  asset       String
+  to          String
+  data        String?
+  status      TxStatus
+  submittedAt DateTime    @default(now())
+
+  @@index([sessionId, submittedAt])
 }

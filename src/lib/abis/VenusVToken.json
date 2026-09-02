@@ -1,0 +1,55 @@
+[
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "mint",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{ "internalType": "uint256", "name": "mintAmount", "type": "uint256" }],
+    "name": "mint",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{ "internalType": "uint256", "name": "borrowAmount", "type": "uint256" }],
+    "name": "borrow",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
+    "name": "getAccountSnapshot",
+    "outputs": [
+      { "internalType": "uint256", "name": "error", "type": "uint256" },
+      { "internalType": "uint256", "name": "vTokenBalance", "type": "uint256" },
+      { "internalType": "uint256", "name": "borrowBalance", "type": "uint256" },
+      { "internalType": "uint256", "name": "exchangeRateMantissa", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "exchangeRateStored",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "underlying",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

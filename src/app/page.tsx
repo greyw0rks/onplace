@@ -1,194 +1,138 @@
-import Link from "next/link";
+"use client";
 
-export default function HomePage() {
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { X } from 'lucide-react';
+import { SpatialLayout } from './components/spatial/SpatialLayout';
+import { LeftPanel } from './components/spatial/LeftPanel';
+import { AgentNetworkCanvas } from './components/spatial/AgentNetworkCanvas';
+import { TopActionBar } from './components/spatial/TopActionBar';
+import { BottomContextCards } from './components/spatial/BottomContextCards';
+import { MarketplaceStatsPanel } from './components/spatial/MarketplaceStatsPanel';
+import { NetworkNode, NetworkData, MarketplaceStats } from './components/spatial/types';
+import { ActivityFeed } from './components/ActivityFeed';
+
+const ZOOM_STEP = 1.3;
+const ZOOM_MIN = 1;
+const ZOOM_MAX = 4;
+
+export default function SpatialHomePage() {
+  const [networkData, setNetworkData] = useState<NetworkData>({ nodes: [], edges: [] });
+  const [stats, setStats] = useState<MarketplaceStats | null>(null);
+  const [selectedNode, setSelectedNode] = useState<NetworkNode | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const fetchNetwork = useCallback(async () => {
+    try {
+      const response = await fetch('/api/agents/network');
+      if (!response.ok) throw new Error(`network request failed: ${response.status}`);
+      setNetworkData(await response.json());
+      setLastUpdated(new Date());
+    } catch (error) {
+      console.error('Failed to fetch network:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNetwork().finally(() => setLoading(false));
+  }, [fetchNetwork]);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchNetwork();
+    setRefreshing(false);
+  }, [fetchNetwork]);
+
+  const activeRatio =
+    stats && stats.registeredAgents > 0 ? stats.activeAgents / stats.registeredAgents : 0;
+
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="mx-auto max-w-[1320px] px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded bg-cyan flex items-center justify-center font-heading font-bold text-bg text-sm">
-              AP
+    <SpatialLayout
+      leftContent={
+        <LeftPanel>
+          <MarketplaceStatsPanel onDataLoaded={setStats} />
+
+          <div className="mt-8 pt-8 border-t border-black/10">
+            <ActivityFeed limit={6} variant="light" />
+          </div>
+        </LeftPanel>
+      }
+      rightContent={
+        <>
+          <TopActionBar
+            onRefresh={handleRefresh}
+            refreshing={refreshing}
+            lastUpdated={lastUpdated}
+            status={`${networkData.nodes.length} agents mapped`}
+          />
+
+          {loading ? (
+            <div className="flex items-center justify-center h-full text-sm text-[#A3A3A3]">
+              Loading agent network...
             </div>
-            <span className="font-heading text-lg font-semibold">AgentProof</span>
-          </div>
-          <nav className="flex items-center gap-6">
-            <Link href="/agents" className="text-sm text-text-1 hover:text-cyan transition-colors">
-              Browse
-            </Link>
-            <Link href="/agents?category=health_factor_monitoring" className="text-sm text-text-1 hover:text-cyan transition-colors">
-              Live Agents
-            </Link>
-            <span className="live-indicator">
-              <span className="sonar-pulse inline-block"></span>
-              Live on BSC
-            </span>
-          </nav>
-        </div>
-      </header>
-
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <NetworkBackground />
-        </div>
-        <div className="relative mx-auto max-w-[1320px] px-6 py-20 text-center">
-          <div className="mb-3">
-            <span className="chip chip-active">
-              <span className="pulse-dot inline-block w-2 h-2 rounded-full bg-cyan"></span>
-              ERC-8004 Verified
-            </span>
-          </div>
-          <h1 className="font-heading text-5xl font-bold mb-4 leading-tight">
-            AI Agents That
-            <br />
-            <span className="text-cyan">Prove Themselves</span>
-          </h1>
-          <p className="text-text-1 text-base max-w-xl mx-auto mb-8 leading-relaxed">
-            Discover, compare and hire continuously verified AI agents on BNB Chain.
-            Every agent submits real on-chain transactions—no simulation, no fake data.
-          </p>
-          <div className="flex items-center justify-center gap-3">
-            <Link href="/agents" className="btn btn-primary">
-              Browse Agents
-            </Link>
-            <Link href="/agents?category=health_factor_monitoring" className="btn btn-secondary">
-              View Live Demo
-            </Link>
-          </div>
-
-          {/* Live stats */}
-          <div className="mt-16 grid grid-cols-4 gap-6 max-w-2xl mx-auto">
-            <StatCard label="Live Agents" value="38" accent="cyan" />
-            <StatCard label="On-Chain Txs" value="127K+" accent="magenta" />
-            <StatCard label="Categories" value="4" accent="lime" />
-            <StatCard label="Uptime" value="99.2%" accent="green" />
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="mx-auto max-w-[1320px] px-6 py-16">
-        <div className="grid grid-cols-3 gap-6">
-          <FeatureCard
-            icon="◈"
-            title="ERC-8004 Identity"
-            description="Every agent is registered on-chain with a verifiable identity token"
-            accent="cyan"
-          />
-          <FeatureCard
-            icon="◉"
-            title="Live Health Checks"
-            description="Real-time monitoring with on-chain transaction proofs for every check"
-            accent="magenta"
-          />
-          <FeatureCard
-            icon="◐"
-            title="Trust Scores"
-            description="Algorithmic reputation scoring based on verified on-chain activity"
-            accent="lime"
-          />
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="mx-auto max-w-[1320px] px-6 py-16">
-        <div className="relative border border-border rounded p-10 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan/5 to-magenta/5"></div>
-          <div className="relative text-center">
-            <h2 className="font-heading text-2xl font-bold mb-3">
-              Ready to hire a verified agent?
-            </h2>
-            <p className="text-text-1 text-sm mb-6 max-w-lg mx-auto leading-relaxed">
-              Browse 37 real agents across rebalancing, grid trading, yield optimization, and health monitoring.
-            </p>
-            <Link href="/agents" className="btn btn-primary">
-              Explore Agents
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Ticker */}
-      <Ticker />
-    </div>
-  );
-}
-
-function StatCard({ label, value, accent }: { label: string; value: string; accent: string }) {
-  return (
-    <div className="text-center">
-      <div className={`text-2xl font-heading font-bold mb-1 text-${accent}`}>{value}</div>
-      <div className="text-[10px] text-text-2 uppercase tracking-wider">{label}</div>
-    </div>
-  );
-}
-
-function FeatureCard({ icon, title, description, accent }: { icon: string; title: string; description: string; accent: string }) {
-  return (
-    <div className="border border-border rounded p-5 hover:border-cyan/40 transition-colors">
-      <div className={`text-3xl mb-3 text-${accent}`}>{icon}</div>
-      <h3 className="font-heading text-base font-semibold mb-2">{title}</h3>
-      <p className="text-xs text-text-1 leading-relaxed">{description}</p>
-    </div>
-  );
-}
-
-function NetworkBackground() {
-  return (
-    <svg className="w-full h-full" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <radialGradient id="glow-cyan">
-          <stop offset="0%" stopColor="#3ef2ff" stopOpacity="0.6" />
-          <stop offset="100%" stopColor="#3ef2ff" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      {/* Central hub */}
-      <circle cx="600" cy="300" r="4" fill="#3ef2ff" />
-      <circle cx="600" cy="300" r="20" fill="url(#glow-cyan)" className="sonar-pulse" />
-
-      {/* Connecting lines */}
-      {[...Array(8)].map((_, i) => {
-        const angle = (i / 8) * Math.PI * 2;
-        const x = 600 + Math.cos(angle) * 200;
-        const y = 300 + Math.sin(angle) * 150;
-        return (
-          <g key={i}>
-            <line
-              x1="600"
-              y1="300"
-              x2={x}
-              y2={y}
-              stroke="#1a1a1f"
-              strokeWidth="1"
+          ) : (
+            <AgentNetworkCanvas
+              nodes={networkData.nodes}
+              edges={networkData.edges}
+              selectedId={selectedNode?.id ?? null}
+              zoom={zoom}
+              onNodeClick={setSelectedNode}
             />
-            <circle cx={x} cy={y} r="3" fill="#4d4e58" />
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
+          )}
 
-function Ticker() {
-  const logs = [
-    { text: "Agent #1907 health check → 0xc15229...", color: "cyan" },
-    { text: "Grid trader rebalanced 3 positions", color: "green" },
-    { text: "Yield optimizer: +2.4% APY detected", color: "lime" },
-    { text: "Health monitor: wallet balance OK", color: "cyan" },
-    { text: "New agent registered: tokenId 2108", color: "magenta" },
-  ];
+          <BottomContextCards
+            hourlyActivity={stats?.hourlyActivity}
+            ratio={activeRatio}
+            ratioLabel={stats ? `${stats.activeAgents}/${stats.registeredAgents} active` : undefined}
+            onZoomIn={() => setZoom((z) => Math.min(ZOOM_MAX, z * ZOOM_STEP))}
+            onZoomOut={() => setZoom((z) => Math.max(ZOOM_MIN, z / ZOOM_STEP))}
+            onReset={() => setZoom(1)}
+          />
+        </>
+      }
+      floatingCards={
+        selectedNode && (
+          <div className="absolute right-6 top-24 w-72 floating-card p-5 z-20">
+            <button
+              onClick={() => setSelectedNode(null)}
+              aria-label="Close agent details"
+              className="absolute top-3 right-3 text-[#A3A3A3] hover:text-white transition"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
 
-  return (
-    <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-ink/90 backdrop-blur overflow-hidden">
-      <div className="ticker-scroll flex items-center gap-8 py-3">
-        {[...logs, ...logs].map((log, i) => (
-          <div key={i} className="flex items-center gap-2 text-xs whitespace-nowrap">
-            <span className={`inline-block w-1.5 h-1.5 rounded-full bg-${log.color}`}></span>
-            <span className="text-text-1">{log.text}</span>
+            <h3 className="text-white text-sm font-semibold mb-1 pr-6">{selectedNode.name}</h3>
+            <p className="text-[#A3A3A3] text-[10px] mb-4">by {selectedNode.developer}</p>
+
+            <dl className="flex flex-col gap-2 text-[11px] mb-5">
+              <div className="flex items-center justify-between">
+                <dt className="text-[#A3A3A3]">Trust score</dt>
+                <dd className="text-[#FF7A00] font-bold">{selectedNode.trustScore}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-[#A3A3A3]">Category</dt>
+                <dd className="text-white">{selectedNode.category.replace(/_/g, ' ')}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-[#A3A3A3]">Status</dt>
+                <dd className={selectedNode.active ? 'text-[#42f099]' : 'text-[#A3A3A3]'}>
+                  {selectedNode.active ? 'Checked in last hour' : 'Idle'}
+                </dd>
+              </div>
+            </dl>
+
+            <Link
+              href={`/agents/${selectedNode.id}`}
+              className="block w-full text-center text-[11px] uppercase tracking-wider py-2.5 bg-[#FF7A00] text-black font-semibold hover:bg-[#FFA500] transition"
+            >
+              View agent
+            </Link>
           </div>
-        ))}
-      </div>
-    </div>
+        )
+      }
+    />
   );
 }

@@ -1,9 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Check, ExternalLink, X } from "lucide-react";
 import { getAgent } from "@/lib/agents";
+import { prisma } from "@/lib/db";
 import { trustScoreOf, trustBand } from "@/lib/health-check";
+import { VERIFICATION_CRITERIA, MIN_UPTIME } from "@/lib/verification";
 import { createHire } from "./actions";
 import { AgentScopeCanvas } from "../agent-scope-canvas";
+import { SpatialPage } from "../../components/spatial/SpatialPage";
+import { PanelHeader, PanelStat, PanelSection } from "../../components/spatial/PanelHeader";
+import { CanvasScroll } from "../../components/spatial/CanvasScroll";
+import { TRUST_BAND_COLOR } from "../../components/spatial/AgentCard";
+import { getCategoryColor } from "@/lib/network-layout";
 
 const CATEGORY_LABELS: Record<string, string> = {
   rebalancing: "Rebalancing",
@@ -13,6 +21,17 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const BSCSCAN_TESTNET_TX_BASE = "https://testnet.bscscan.com/tx/";
+
+function healthFactorBand(hf: number): "healthy" | "warning" | "critical" {
+  if (hf >= 1.2) return "healthy";
+  if (hf >= 1.05) return "warning";
+  return "critical";
+}
+
+function healthFactorColor(hf: number): string {
+  const band = healthFactorBand(hf);
+  return band === "healthy" ? "#42f099" : band === "warning" ? "#ffb13e" : "#FF3B30";
+}
 
 export default async function AgentDetailPage({
   params,
@@ -31,244 +50,281 @@ export default async function AgentDetailPage({
 
   const trust = trustScoreOf(agent);
   const band = trustBand(trust);
+  const trustColor = TRUST_BAND_COLOR[band] ?? "#A3A3A3";
   const isLive = agent.sourceType === "self_built";
+  const latestHealthFactor =
+    agent.healthChecks.find((c) => c.healthFactor != null)?.healthFactor ?? null;
 
-  return (
-    <div className="min-h-screen pb-20">
-      {/* Header */}
-      <header className="border-b border-border sticky top-0 bg-bg/90 backdrop-blur z-10">
-        <div className="mx-auto max-w-[1320px] px-6 py-4 flex items-center justify-between">
-          <Link href="/agents" className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded bg-cyan flex items-center justify-center font-heading font-bold text-bg text-sm">
-              AP
-            </div>
-            <span className="font-heading text-lg font-semibold">AgentProof</span>
-          </Link>
-          <Link href="/agents" className="text-sm text-text-1 hover:text-cyan transition-colors">
-            ← Back to agents
-          </Link>
-        </div>
-      </header>
+  const successfulChecks = await prisma.healthCheck.count({
+    where: { agentId: agent.id, success: true },
+  });
 
-      {/* Hero scope */}
-      <div className="border-b border-border bg-ink">
-        <div className="mx-auto max-w-[1320px] px-6">
-          <div className="h-32 relative overflow-hidden">
-            <AgentScopeCanvas
-              agentId={agent.id}
-              healthy={agent.healthChecks?.[0]?.success ?? true}
-              sourceType={agent.sourceType}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-[1320px] px-6 py-6">
-        {hired && (
-          <div className="mb-4 border border-green rounded p-3 bg-green/5">
-            <div className="flex items-center gap-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-green"></span>
-              <span className="text-xs text-green font-semibold">Agent hired successfully!</span>
-            </div>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main column */}
-          <div className="lg:col-span-2 space-y-5">
-            {/* Header */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="chip chip-idle text-[9px] px-2 py-1">
-                  {CATEGORY_LABELS[agent.categorySlug]}
-                </span>
-                {isLive && (
-                  <span className="chip chip-success text-[9px] px-2 py-1">
-                    <span className="pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-green mr-1"></span>
-                    Live on BSC Testnet
-                  </span>
-                )}
-              </div>
-              <h1 className="font-heading text-2xl font-bold mb-1">{agent.name}</h1>
-              <p className="text-xs text-text-2">by {agent.developer}</p>
-            </div>
-
-            {/* Description */}
-            <div className="border border-border rounded p-4">
-              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-2">
-                Description
-              </h2>
-              <p className="text-xs text-text-1 leading-relaxed">{agent.description}</p>
-            </div>
-
-            {/* Health check history */}
-            <div className="border border-border rounded p-4">
-              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-3">
-                Health Check History
-              </h2>
-              {agent.healthChecks.length > 0 ? (
-                <div className="space-y-1.5">
-                  {agent.healthChecks.map((check) => (
-                    <div
-                      key={check.id}
-                      className="flex items-center justify-between py-1.5 border-b border-border last:border-0"
-                    >
-                      <span className="text-[10px] text-text-2 font-mono">
-                        {check.timestamp.toLocaleString()}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`text-[10px] font-semibold ${
-                            check.success ? "text-green" : "text-red"
-                          }`}
-                        >
-                          {check.success ? "OK" : check.error ?? "Failed"}
-                        </span>
-                        {check.txHash ? (
-                          <a
-                            href={`${BSCSCAN_TESTNET_TX_BASE}${check.txHash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[10px] font-mono text-cyan hover:underline"
-                          >
-                            View tx ↗
-                          </a>
-                        ) : (
-                          <span className="text-[10px] text-text-2 font-mono">
-                            {check.latencyMs != null ? `${check.latencyMs}ms` : "—"}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-text-2">No health checks recorded yet.</p>
-              )}
-            </div>
-
-            {/* Details */}
-            <div className="border border-border rounded p-4">
-              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-3">
-                Technical Details
-              </h2>
-              <dl className="grid grid-cols-2 gap-3 text-[10px]">
-                <Detail label="ERC-8004 ID" value={agent.erc8004Id || "—"} mono />
-                <Detail label="Chain" value={agent.chain || "—"} />
-                <Detail label="Wallet" value={agent.walletAddress || "—"} mono />
-                <Detail label="Category" value={CATEGORY_LABELS[agent.categorySlug]} />
-                {agent.priceAmount && agent.priceAsset && (
-                  <Detail label="Price" value={`${agent.priceAmount} ${agent.priceAsset}`} mono />
-                )}
-                <Detail
-                  label="Registered"
-                  value={agent.createdAt.toLocaleDateString()}
-                />
-              </dl>
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-5">
-            {/* Trust score */}
-            <div className="border border-border rounded p-4">
-              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-3">
-                Trust Score
-              </h2>
-              <div className="text-center">
-                <div className={`text-4xl font-heading font-bold text-${getTrustColor(band)} mb-1`}>
-                  {trust.toFixed(1)}%
-                </div>
-                <div className="text-[10px] text-text-2 uppercase tracking-wider">{band}</div>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="border border-border rounded p-4">
-              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-3">
-                Metrics
-              </h2>
-              <div className="space-y-2">
-                <Stat label="Uptime" value={agent.uptimePct ? `${agent.uptimePct.toFixed(1)}%` : "—"} />
-                <Stat label="Avg Latency" value={agent.latencyMs ? `${agent.latencyMs}ms` : "—"} />
-                <Stat label="Last Check" value={agent.lastHealthCheckAt ? new Date(agent.lastHealthCheckAt).toLocaleTimeString() : "Never"} />
-                <Stat label="Total Checks" value={agent.healthChecks.length.toString()} />
-              </div>
-            </div>
-
-            {/* Hire */}
-            <div className="border border-cyan/40 rounded p-4 glow-cyan">
-              <h2 className="font-heading text-[10px] uppercase tracking-wider text-text-2 mb-3">
-                Hire This Agent
-              </h2>
-              <p className="text-[10px] text-text-1 mb-3 leading-relaxed">
-                Deploy this verified agent to your wallet. All on-chain activity will be logged and verifiable.
-              </p>
-              <form action={createHire}>
-                <input type="hidden" name="agentId" value={agent.id} />
-                <button type="submit" className="w-full btn btn-primary">
-                  Hire Agent
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Ticker */}
-      <Ticker />
-    </div>
-  );
-}
-
-function Detail({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
-  return (
-    <div>
-      <dt className="text-text-2 uppercase tracking-wider mb-0.5 text-[9px]">{label}</dt>
-      <dd className={`${mono ? "font-mono" : ""} truncate text-[10px]`}>{value}</dd>
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between py-1.5 border-b border-border last:border-0">
-      <span className="text-[10px] text-text-2 uppercase tracking-wider">{label}</span>
-      <span className="text-[10px] font-mono font-semibold">{value}</span>
-    </div>
-  );
-}
-
-function getTrustColor(band: string) {
-  const map: Record<string, string> = {
-    excellent: "green",
-    strong: "lime",
-    moderate: "amber",
-    weak: "amber",
-    "high-risk": "red",
-  };
-  return map[band] || "text-1";
-}
-
-function Ticker() {
-  const logs = [
-    { text: "Agent #1907 health check → 0xc15229...", color: "cyan" },
-    { text: "Grid trader rebalanced 3 positions", color: "green" },
-    { text: "Yield optimizer: +2.4% APY detected", color: "lime" },
-    { text: "Health monitor: wallet balance OK", color: "cyan" },
-    { text: "New agent registered: tokenId 2108", color: "magenta" },
+  // Same evidence the verification sweep uses, shown so the badge is auditable.
+  const checks = [
+    { label: VERIFICATION_CRITERIA[0], passed: Boolean(agent.erc8004Id) },
+    { label: VERIFICATION_CRITERIA[1], passed: agent.healthChecks[0]?.success ?? false },
+    { label: VERIFICATION_CRITERIA[2], passed: (agent.uptimePct ?? 0) >= MIN_UPTIME },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-ink/90 backdrop-blur overflow-hidden">
-      <div className="ticker-scroll flex items-center gap-8 py-3">
-        {[...logs, ...logs].map((log, i) => (
-          <div key={i} className="flex items-center gap-2 text-xs whitespace-nowrap">
-            <span className={`inline-block w-1.5 h-1.5 rounded-full bg-${log.color}`}></span>
-            <span className="text-text-1">{log.text}</span>
+    <SpatialPage
+      status={isLive ? "Live on BSC Testnet" : CATEGORY_LABELS[agent.categorySlug]}
+      left={
+        <>
+          <PanelHeader breadcrumb={`Agent / ${agent.developer}`} title={agent.name} />
+
+          <div className="flex flex-wrap items-center gap-1.5 mb-6">
+            <span
+              className="text-[9px] uppercase tracking-wider px-2 py-1 border"
+              style={{
+                color: "#111111",
+                borderColor: `${getCategoryColor(agent.categorySlug)}88`,
+                background: `${getCategoryColor(agent.categorySlug)}22`,
+              }}
+            >
+              {CATEGORY_LABELS[agent.categorySlug]}
+            </span>
+            {isLive && (
+              <span className="text-[9px] uppercase tracking-wider px-2 py-1 bg-[#FF7A00]/10 text-[#FF7A00] border border-[#FF7A00]/30">
+                Live on BSC Testnet
+              </span>
+            )}
+            {agent.verified && (
+              <span className="text-[9px] uppercase tracking-wider px-2 py-1 bg-black/[0.04] text-[#111111] border border-black/15">
+                Verified
+              </span>
+            )}
           </div>
-        ))}
+
+          {hired && (
+            <div className="mb-6 border border-[#42f099] bg-[#42f099]/10 px-3 py-2 text-xs text-[#111111]">
+              Agent hired successfully.
+            </div>
+          )}
+
+          <div className="mb-8 pb-6 border-b border-black/10">
+            <PanelStat
+              value={`${trust.toFixed(0)}`}
+              caption={
+                <>
+                  trust score
+                  <br />
+                  <span style={{ color: trustColor }}>{band}</span>
+                </>
+              }
+            />
+          </div>
+
+          {latestHealthFactor != null && (
+            <PanelSection label="Venus health factor" className="mb-8">
+              <PanelStat
+                value={
+                  <span style={{ color: healthFactorColor(latestHealthFactor) }}>
+                    {latestHealthFactor.toFixed(2)}
+                  </span>
+                }
+                caption={healthFactorBand(latestHealthFactor)}
+              />
+            </PanelSection>
+          )}
+
+          <PanelSection label="Verification" className="mb-8">
+            <ul className="flex flex-col gap-2">
+              {checks.map((check) => (
+                <li key={check.label} className="flex items-start gap-2 text-[11px] leading-snug">
+                  {check.passed ? (
+                    <Check className="w-3 h-3 mt-0.5 shrink-0 text-[#FF7A00]" />
+                  ) : (
+                    <X className="w-3 h-3 mt-0.5 shrink-0 text-[#808080]" />
+                  )}
+                  <span className={check.passed ? "text-[#111111]" : "text-[#808080]"}>
+                    {check.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-[10px] text-[#808080] mt-3 leading-relaxed">
+              {agent.verified
+                ? "All criteria met — the badge is re-checked on every sweep and revoked if the endpoint stops responding."
+                : "Not currently verified. The badge is granted automatically once every criterion is met."}
+            </p>
+          </PanelSection>
+
+          <PanelSection label="Scores" className="mb-8">
+            <div className="flex flex-col gap-3">
+              <ScoreBar label="Health" value={agent.healthScore ?? 0} color="#42f099" />
+              <ScoreBar label="Performance" value={agent.performanceScore ?? 0} color="#FF7A00" />
+              <ScoreBar label="Community" value={agent.communityScore ?? 0} color="#3ef2ff" />
+            </div>
+          </PanelSection>
+
+          <PanelSection label="Metrics" className="mb-8">
+            <dl className="flex flex-col">
+              <Metric label="Uptime" value={agent.uptimePct != null ? `${(agent.uptimePct * 100).toFixed(1)}%` : "—"} />
+              <Metric label="Avg latency" value={agent.latencyMs != null ? `${agent.latencyMs}ms` : "—"} />
+              <Metric
+                label="Last check"
+                value={agent.lastHealthCheckAt ? new Date(agent.lastHealthCheckAt).toLocaleString() : "Never"}
+              />
+              <Metric
+                label="Checks recorded"
+                value={`${successfulChecks} ok / ${agent.healthChecks.length} shown`}
+              />
+              <Metric label="Followers" value={agent.followCount.toString()} />
+              <Metric label="Views" value={agent.viewCount.toString()} />
+            </dl>
+          </PanelSection>
+
+          <PanelSection label="Hire" className="mt-auto">
+            <p className="text-[10px] text-[#808080] leading-relaxed mb-3">
+              Deploy this agent against your wallet. Every check it runs is logged on-chain and
+              verifiable.
+            </p>
+            <form action={createHire}>
+              <input type="hidden" name="agentId" value={agent.id} />
+              <button
+                type="submit"
+                className="w-full text-[11px] uppercase tracking-wider py-2.5 bg-[#FF7A00] text-black font-semibold hover:bg-[#FFA500] transition"
+              >
+                Hire agent
+              </button>
+            </form>
+            <Link
+              href={`/compare?ids=${agent.id}`}
+              className="block w-full text-center text-[11px] uppercase tracking-wider py-2.5 mt-2 border border-black/15 text-[#111111] hover:border-[#FF7A00] transition"
+            >
+              Compare
+            </Link>
+          </PanelSection>
+        </>
+      }
+      right={
+        <CanvasScroll className="flex flex-col gap-4">
+          <div className="floating-card overflow-hidden">
+            <div className="h-32 relative overflow-hidden border-b border-white/10">
+              <AgentScopeCanvas
+                agentId={agent.id}
+                healthy={agent.healthChecks?.[0]?.success ?? true}
+                sourceType={agent.sourceType}
+              />
+            </div>
+            <div className="p-5">
+              <h2 className="text-[10px] uppercase tracking-wider text-[#A3A3A3] font-semibold mb-2">
+                Description
+              </h2>
+              <p className="text-xs text-white/90 leading-relaxed">{agent.description}</p>
+            </div>
+          </div>
+
+          <div className="floating-card p-5">
+            <h2 className="text-[10px] uppercase tracking-wider text-[#A3A3A3] font-semibold mb-3">
+              Health check history
+            </h2>
+            {agent.healthChecks.length > 0 ? (
+              <div className="flex flex-col">
+                {agent.healthChecks.map((check) => (
+                  <div
+                    key={check.id}
+                    className="flex items-center justify-between gap-3 py-2 border-b border-white/[0.06] last:border-0"
+                  >
+                    <span className="text-[10px] text-[#A3A3A3] tabular-nums">
+                      {check.timestamp.toLocaleString()}
+                    </span>
+                    <div className="flex items-center gap-3">
+                      {check.healthFactor != null ? (
+                        <span
+                          className="text-[10px] font-semibold"
+                          style={{ color: healthFactorColor(check.healthFactor) }}
+                        >
+                          HF {check.healthFactor.toFixed(2)}
+                        </span>
+                      ) : (
+                        <span
+                          className="text-[10px] font-semibold"
+                          style={{ color: check.success ? "#42f099" : "#FF3B30" }}
+                        >
+                          {check.success ? "OK" : check.error ?? "Failed"}
+                        </span>
+                      )}
+                      {check.txHash ? (
+                        <a
+                          href={`${BSCSCAN_TESTNET_TX_BASE}${check.txHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-[10px] text-[#FF7A00] hover:underline"
+                        >
+                          View tx
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
+                      ) : (
+                        <span className="text-[10px] text-[#A3A3A3] tabular-nums">
+                          {check.latencyMs != null ? `${check.latencyMs}ms` : "—"}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-[#A3A3A3]">No health checks recorded yet.</p>
+            )}
+          </div>
+
+          <div className="floating-card p-5">
+            <h2 className="text-[10px] uppercase tracking-wider text-[#A3A3A3] font-semibold mb-3">
+              Technical details
+            </h2>
+            <dl className="grid grid-cols-2 gap-4">
+              <Detail label="ERC-8004 ID" value={agent.erc8004Id || "—"} />
+              <Detail label="Chain" value={agent.chain || "—"} />
+              <Detail label="Wallet" value={agent.walletAddress || "—"} />
+              <Detail label="Category" value={CATEGORY_LABELS[agent.categorySlug]} />
+              {agent.priceAmount && agent.priceAsset && (
+                <Detail label="Price" value={`${agent.priceAmount} ${agent.priceAsset}`} />
+              )}
+              <Detail label="Registered" value={agent.createdAt.toLocaleDateString()} />
+              <Detail label="Endpoint" value={agent.endpointUrl} />
+              <Detail label="Risk level" value={agent.riskLevel} />
+            </dl>
+          </div>
+        </CanvasScroll>
+      }
+    />
+  );
+}
+
+function ScoreBar({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[10px] text-[#808080]">{label}</span>
+        <span className="text-[10px] font-semibold text-[#111111] tabular-nums">
+          {value.toFixed(0)}%
+        </span>
       </div>
+      <div className="h-1 bg-black/[0.08] overflow-hidden">
+        <div className="h-full" style={{ width: `${Math.min(100, value)}%`, background: color }} />
+      </div>
+    </div>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-2 border-b border-black/[0.06] last:border-0">
+      <dt className="text-[10px] text-[#808080]">{label}</dt>
+      <dd className="text-[10px] font-semibold text-[#111111] tabular-nums truncate">{value}</dd>
+    </div>
+  );
+}
+
+function Detail({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-[9px] uppercase tracking-wider text-[#A3A3A3] mb-0.5">{label}</dt>
+      <dd className="text-[10px] text-white truncate" title={value}>
+        {value}
+      </dd>
     </div>
   );
 }

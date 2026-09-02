@@ -1,15 +1,21 @@
 import Link from "next/link";
+import { Boxes, ShieldCheck, Activity } from "lucide-react";
 import { listAgentsByCategory } from "@/lib/agents";
 import { trustScoreOf, trustBand } from "@/lib/health-check";
-import { AgentScopeCanvas } from "./agent-scope-canvas";
+import { SpatialPage } from "../components/spatial/SpatialPage";
+import { PanelHeader, PanelMetric, PanelStat, PanelSection } from "../components/spatial/PanelHeader";
+import { CanvasScroll, CanvasGrid, CanvasEmpty } from "../components/spatial/CanvasScroll";
+import { AgentCard } from "../components/spatial/AgentCard";
+import { getCategoryColor } from "@/lib/network-layout";
 import { CategorySlug } from "@/generated/prisma/enums";
 
-const CATEGORY_LABELS: Record<string, string> = {
-  rebalancing: "Rebalancing",
-  grid_trading: "Grid Trading",
-  yield_optimisation: "Yield Optimisation",
-  health_factor_monitoring: "Health Factor Monitoring",
-};
+const CATEGORIES: Array<{ slug: CategorySlug | null; label: string }> = [
+  { slug: null, label: "All categories" },
+  { slug: "health_factor_monitoring", label: "Health monitoring" },
+  { slug: "grid_trading", label: "Grid trading" },
+  { slug: "yield_optimisation", label: "Yield optimisation" },
+  { slug: "rebalancing", label: "Rebalancing" },
+];
 
 export default async function AgentsPage({
   searchParams,
@@ -17,182 +23,118 @@ export default async function AgentsPage({
   searchParams: Promise<{ category?: string }>;
 }) {
   const { category } = await searchParams;
-  const agents = await listAgentsByCategory(category as CategorySlug | null);
+  const agents = await listAgentsByCategory((category as CategorySlug) ?? null);
+
+  const cards = agents.map((agent) => {
+    const trust = trustScoreOf(agent);
+    return {
+      id: agent.id,
+      name: agent.name,
+      developer: agent.developer,
+      description: agent.description,
+      category: agent.categorySlug,
+      trust,
+      band: trustBand(trust),
+      healthy: agent.healthChecks?.[0]?.success ?? null,
+      live: agent.sourceType === "self_built",
+    };
+  });
+
+  const verified = agents.filter((a) => a.verified).length;
+  const healthy = cards.filter((c) => c.healthy === true).length;
+  const checked = cards.filter((c) => c.healthy != null).length;
+  const activeLabel = CATEGORIES.find((c) => c.slug === (category ?? null))?.label ?? "All categories";
 
   return (
-    <div className="min-h-screen pb-20">
-      {/* Header */}
-      <header className="border-b border-border sticky top-0 bg-bg/90 backdrop-blur z-10">
-        <div className="mx-auto max-w-[1320px] px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded bg-cyan flex items-center justify-center font-heading font-bold text-bg text-sm">
-              AP
-            </div>
-            <span className="font-heading text-lg font-semibold">AgentProof</span>
-          </Link>
-          <div className="flex items-center gap-6">
-            <span className="text-sm text-text-2">
-              {agents.length} agents {category ? `in ${CATEGORY_LABELS[category]}` : "total"}
-            </span>
-            <span className="live-indicator">
-              <span className="sonar-pulse inline-block"></span>
-              Live
-            </span>
+    <SpatialPage
+      status={`${agents.length} agents · ${activeLabel.toLowerCase()}`}
+      left={
+        <>
+          <PanelHeader
+            breadcrumb="Marketplace / Browse"
+            title={
+              <>
+                Agent
+                <br />
+                Registry
+              </>
+            }
+          />
+
+          <div className="grid grid-cols-3 gap-4 mb-3">
+            <PanelMetric icon={<Boxes className="w-3.5 h-3.5 text-[#808080]" />} label="Listed" value={agents.length} />
+            <PanelMetric icon={<ShieldCheck className="w-3.5 h-3.5 text-[#FF7A00]" />} label="Verified" value={verified} />
+            <PanelMetric icon={<Activity className="w-3.5 h-3.5 text-[#808080]" />} label="Healthy" value={healthy} />
           </div>
-        </div>
-      </header>
 
-      {/* Category filter */}
-      <div className="border-b border-border">
-        <div className="mx-auto max-w-[1320px] px-6 py-4">
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-text-2 uppercase tracking-wider">Filter:</span>
-            <CategoryChip href="/agents" label="All" active={!category} />
-            <CategoryChip
-              href="/agents?category=rebalancing"
-              label="Rebalancing"
-              active={category === "rebalancing"}
-            />
-            <CategoryChip
-              href="/agents?category=grid_trading"
-              label="Grid Trading"
-              active={category === "grid_trading"}
-            />
-            <CategoryChip
-              href="/agents?category=yield_optimisation"
-              label="Yield Optimisation"
-              active={category === "yield_optimisation"}
-            />
-            <CategoryChip
-              href="/agents?category=health_factor_monitoring"
-              label="Health Monitoring"
-              active={category === "health_factor_monitoring"}
-            />
-          </div>
-        </div>
-      </div>
+          <p className="text-[10px] text-[#808080] leading-relaxed mb-8 pb-6 border-b border-black/10">
+            Verified means an ERC-8004 on-chain identity, a passing health check on our last sweep,
+            and 80%+ uptime across recorded checks. It is revoked automatically when an endpoint
+            stops responding.
+          </p>
 
-      {/* Agent grid */}
-      <div className="mx-auto max-w-[1320px] px-6 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {agents.map((agent) => {
-            const trust = trustScoreOf(agent);
-            const band = trustBand(trust);
-            return (
-              <Link
-                key={agent.id}
-                href={`/agents/${agent.id}`}
-                className="block border border-border rounded overflow-hidden hover:border-cyan/40 transition-all fade-in group"
-              >
-                {/* Scope visualization */}
-                <div className="h-20 bg-ink border-b border-border relative overflow-hidden">
-                  <AgentScopeCanvas
-                    agentId={agent.id}
-                    healthy={agent.healthChecks?.[0]?.success ?? true}
-                    sourceType={agent.sourceType}
-                  />
-                </div>
-
-                {/* Card content */}
-                <div className="p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-heading text-sm font-semibold truncate group-hover:text-cyan transition-colors">
-                        {agent.name}
-                      </h3>
-                      <p className="text-[10px] text-text-2 mt-0.5">by {agent.developer}</p>
-                    </div>
-                    {agent.sourceType === "self_built" && (
-                      <span className="chip chip-success text-[9px] px-2 py-1 ml-2 flex-shrink-0">
-                        Live
-                      </span>
-                    )}
-                  </div>
-
-                  <p className="text-xs text-text-1 leading-relaxed mb-3 line-clamp-2">
-                    {agent.description}
-                  </p>
-
-                  <div className="flex items-center justify-between text-[10px]">
-                    <div>
-                      <span className="text-text-2">Trust:</span>{" "}
-                      <span className={`font-semibold text-${getTrustColor(band)}`}>
-                        {trust.toFixed(1)}%
-                      </span>
-                    </div>
-                    {agent.healthChecks?.[0] && (
-                      <div className="flex items-center gap-1.5">
+          <PanelSection label="Category" className="mb-8">
+            <div className="flex flex-col">
+              {CATEGORIES.map(({ slug, label }) => {
+                const active = (category ?? null) === slug;
+                const count = slug ? agents.filter((a) => a.categorySlug === slug).length : agents.length;
+                return (
+                  <Link
+                    key={label}
+                    href={slug ? `/agents?category=${slug}` : "/agents"}
+                    aria-current={active ? "page" : undefined}
+                    className={`flex items-center justify-between py-2.5 px-3 -mx-3 text-xs border-l-2 transition ${
+                      active
+                        ? "border-[#FF7A00] bg-[#FF7A00]/10 text-[#111111] font-semibold"
+                        : "border-transparent text-[#808080] hover:text-[#111111] hover:bg-black/[0.03]"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      {slug && (
                         <span
-                          className={`inline-block w-1.5 h-1.5 rounded-full ${
-                            agent.healthChecks[0].success ? "bg-green" : "bg-red"
-                          }`}
-                        ></span>
-                        <span className="text-text-2">
-                          {agent.healthChecks[0].success ? "Healthy" : "Error"}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                          className="inline-block w-2 h-2 rounded-full"
+                          style={{ background: getCategoryColor(slug) }}
+                        />
+                      )}
+                      {label}
+                    </span>
+                    <span className="tabular-nums">{count}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </PanelSection>
 
-        {agents.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-text-2 text-sm">No agents found in this category.</p>
-          </div>
-        )}
-      </div>
-
-      {/* Ticker */}
-      <Ticker />
-    </div>
-  );
-}
-
-function CategoryChip({ href, label, active }: { href: string; label: string; active: boolean }) {
-  return (
-    <Link
-      href={href}
-      className={`chip text-[11px] px-3 py-1.5 ${active ? "chip-active" : "chip-idle"} hover:border-cyan/60 transition-colors`}
-    >
-      {label}
-    </Link>
-  );
-}
-
-function getTrustColor(band: string) {
-  const map: Record<string, string> = {
-    excellent: "green",
-    strong: "lime",
-    moderate: "amber",
-    weak: "amber",
-    "high-risk": "red",
-  };
-  return map[band] || "text-1";
-}
-
-function Ticker() {
-  const logs = [
-    { text: "Agent #1907 health check → 0xc15229...", color: "cyan" },
-    { text: "Grid trader rebalanced 3 positions", color: "green" },
-    { text: "Yield optimizer: +2.4% APY detected", color: "lime" },
-    { text: "Health monitor: wallet balance OK", color: "cyan" },
-    { text: "New agent registered: tokenId 2108", color: "magenta" },
-  ];
-
-  return (
-    <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-ink/90 backdrop-blur overflow-hidden">
-      <div className="ticker-scroll flex items-center gap-8 py-3">
-        {[...logs, ...logs].map((log, i) => (
-          <div key={i} className="flex items-center gap-2 text-xs whitespace-nowrap">
-            <span className={`inline-block w-1.5 h-1.5 rounded-full bg-${log.color}`}></span>
-            <span className="text-text-1">{log.text}</span>
-          </div>
-        ))}
-      </div>
-    </div>
+          <PanelSection label="Health" className="mt-auto">
+            <PanelStat
+              value={checked > 0 ? `${Math.round((healthy / checked) * 100)}%` : "—"}
+              caption={
+                <>
+                  responding
+                  <br />
+                  <span className="text-[#111111]">{healthy}</span> of {checked} checked
+                </>
+              }
+            />
+            {checked < agents.length && (
+              <p className="text-[10px] text-[#808080] mt-4">
+                {agents.length - checked} agents have no health check yet
+              </p>
+            )}
+          </PanelSection>
+        </>
+      }
+      right={
+        <CanvasScroll>
+          <CanvasGrid>
+            {cards.length > 0 ? (
+              cards.map((agent) => <AgentCard key={agent.id} agent={agent} />)
+            ) : (
+              <CanvasEmpty>No agents in this category.</CanvasEmpty>
+            )}
+          </CanvasGrid>
+        </CanvasScroll>
+      }
+    />
   );
 }

@@ -22,6 +22,18 @@
   --success: var(--green);
   --warning: var(--amber);
   --error: var(--red);
+
+  /* Spatial Dashboard Variables */
+  --light-bg: #F8F9FB;
+  --light-text: #111111;
+  --light-text-muted: #808080;
+
+  --dark-bg: #121212;
+  --dark-surface: #1C1C1C;
+  --dark-border: #333333;
+
+  --orange: #FF7A00;
+  --orange-glow: rgba(255, 122, 0, 0.4);
 }
 
 @theme inline {
@@ -96,6 +108,134 @@ p {
 
 .sonar-pulse {
   animation: sonar-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Spatial Dashboard Styles */
+.spatial-container {
+  min-height: 100vh;
+  background: black;
+  padding: 0.5rem;
+
+  /* Spec calls for a geometric sans optimised for data display. The base layer
+     sets JetBrains Mono for the older cyberpunk pages, so override it here. */
+  font-family: var(--font-body), 'Inter', system-ui, sans-serif;
+}
+
+.spatial-container h1,
+.spatial-container h2,
+.spatial-container h3,
+.spatial-container h4 {
+  font-family: inherit;
+  letter-spacing: -0.02em;
+}
+
+.spatial-wrapper {
+  display: flex;
+  height: calc(100vh - 1rem);
+  overflow: hidden;
+  background: var(--dark-bg);
+}
+
+/* Left Panel (Light Mode) */
+.left-panel {
+  width: 33.333%;
+  background: var(--light-bg);
+  color: var(--light-text);
+  overflow-y: auto;
+  border-right: 2px solid black;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .spatial-wrapper {
+    flex-direction: column;
+  }
+
+  .left-panel {
+    width: 100%;
+    height: 50%;
+    border-right: none;
+    border-bottom: 2px solid black;
+  }
+
+  .right-panel {
+    width: 100%;
+    height: 50%;
+  }
+}
+
+/* Right Panel (Dark Mode) */
+.right-panel {
+  flex: 1;
+  background: var(--dark-bg);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Floating Glass Cards */
+.floating-card {
+  background: rgba(28, 28, 28, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Orange Glow Effect */
+.glow-orange {
+  box-shadow: 0 0 40px var(--orange-glow);
+}
+
+/* Dot Grid Background */
+.dot-grid {
+  background-image: radial-gradient(circle at 50% 50%, #333 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.4;
+}
+
+/* Tab Indicator */
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: var(--orange);
+  box-shadow: 0 0 8px var(--orange-glow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Network Node Styles */
+.network-node {
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.network-node:hover {
+  transform: scale(1.15);
+}
+
+.network-node.active {
+  filter: drop-shadow(0 0 8px currentColor);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px currentColor);
+  }
+}
+
+.network-edge {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+  transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}
+
+.network-edge:hover {
+  stroke: rgba(255, 122, 0, 0.4);
+  stroke-width: 2;
 }
 
 /* Glow effects */
@@ -202,19 +342,36 @@ p {
   color: var(--green);
 }
 
-/* Button base */
-button, .btn {
-  font-family: var(--font-mono), monospace;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 3px;
-  border: 1px solid;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  line-height: 1;
+/* Button base — kept in the base layer so Tailwind utilities (and the spatial
+   dashboard below) can override it. Unlayered, it beat every utility class and
+   crushed icon-only buttons to 1px of content width. */
+@layer base {
+  button, .btn {
+    font-family: var(--font-mono), monospace;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 3px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1;
+  }
+
+  /* The spatial dashboard styles its buttons per-component. */
+  .spatial-container button {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    text-transform: none;
+    letter-spacing: normal;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+  }
 }
 
 .btn-primary {

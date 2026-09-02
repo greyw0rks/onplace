@@ -41,3 +41,14 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# foundry build cache
+/cache
+/out
+
+# agent/tool scratch state
+/.atlas
+/.claude
+
+# windows download metadata
+*:Zone.Identifier
