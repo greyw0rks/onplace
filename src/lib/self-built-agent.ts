@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { prisma } from "@/lib/db";
 import {
   getRelayerWallet,
   getHealthCheckLog,
@@ -122,35 +121,28 @@ export async function readVenusHealthFactor(address: string): Promise<VenusHealt
   };
 }
 
-export async function runHealthFactorCheck(agentId: string) {
-  const agent = await prisma.agent.findUniqueOrThrow({ where: { id: agentId } });
-  if (!agent.erc8004Id) throw new Error("Agent has no erc8004Id; register it first");
+export interface OnchainVerification {
+  txHash: string;
+  monitored: VenusHealthFactor;
+}
 
+/**
+ * Reads the relayer's real Venus position and records the outcome on-chain.
+ *
+ * Deliberately does not touch the database. The caller persists the result, so
+ * an on-chain verification and a plain endpoint ping land in HealthCheck the
+ * same way and an agent's reliability history stays comparable across both.
+ */
+export async function verifyOnchain(): Promise<OnchainVerification> {
   const wallet = getRelayerWallet();
   const walletAddress = await wallet.getAddress();
-  const result = await readVenusHealthFactor(walletAddress);
+  const monitored = await readVenusHealthFactor(walletAddress);
 
   const healthCheckLog = getHealthCheckLog(wallet);
-  const finiteHealthFactor = Number.isFinite(result.healthFactor) ? result.healthFactor : 999;
+  const finiteHealthFactor = Number.isFinite(monitored.healthFactor) ? monitored.healthFactor : 999;
   const value = BigInt(Math.round(finiteHealthFactor * 100)); // scaled fixed-point, 2 decimals
-  const tx = await healthCheckLog.recordCheck(walletAddress, result.healthy, value);
+  const tx = await healthCheckLog.recordCheck(walletAddress, monitored.healthy, value);
   const receipt = await tx.wait();
 
-  await prisma.healthCheck.create({
-    data: {
-      agentId,
-      success: true,
-      txHash: receipt?.hash ?? tx.hash,
-      healthFactor: Number.isFinite(result.healthFactor) ? result.healthFactor : null,
-      collateralValueUsd: result.collateralValueUsd,
-      borrowValueUsd: result.borrowValueUsd,
-    },
-  });
-
-  await prisma.agent.update({
-    where: { id: agentId },
-    data: { lastHealthCheckAt: new Date() },
-  });
-
-  return { txHash: receipt?.hash ?? tx.hash, monitored: result };
+  return { txHash: receipt?.hash ?? tx.hash, monitored };
 }

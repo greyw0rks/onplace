@@ -15,10 +15,18 @@ export const VENUS_COMPTROLLER_ADDRESS = "0x94d1820b2D1c7c7452A163983Dc888CEC546
 export const VBNB_ADDRESS = "0x2E7222e51c0f6e98610A1543Aa3836E092CDe62c";
 export const VUSDT_ADDRESS = "0xb7526572FFE56AB9D7489838Bf2E18e3323b441A";
 
+export const BSC_TESTNET_CHAIN_ID = 97;
+
+/**
+ * Pinning the network matters: without it every provider instance spends a
+ * round-trip on eth_chainId before its first real call, and that probe is the
+ * first thing to time out when the health-check sweep has the event loop busy
+ * with concurrent endpoint pings ("failed to detect network").
+ */
 export function getProvider() {
   const rpcUrl = process.env.BSC_TESTNET_RPC_URL;
   if (!rpcUrl) throw new Error("BSC_TESTNET_RPC_URL is not set");
-  return new ethers.JsonRpcProvider(rpcUrl);
+  return new ethers.JsonRpcProvider(rpcUrl, BSC_TESTNET_CHAIN_ID, { staticNetwork: true });
 }
 
 export function getRelayerWallet() {

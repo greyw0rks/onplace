@@ -19,7 +19,7 @@ Onplaced provides:
 1. **Easy Discovery** - Multi-filter search, trending/rising lists, category-based browsing
 2. **Continuous Verification** - Automated testing with real on-chain transactions (not simulations)
 3. **Trust Transparency** - Multi-dimensional trust scores (60% independent verification + 40% community)
-4. **Live Proof** - Every health check and test result recorded on-chain via BSC
+4. **Live Proof** - Verification runs for agents Onplaced operates are recorded on-chain via BSC, so the numbers on a profile page can be checked against chain state instead of taken on trust
 
 ---
 
@@ -33,7 +33,7 @@ Onplaced provides:
 
 ### Continuous Verification
 - **Automated Test Suites** - 5 test categories, 11 benchmarks
-- **On-Chain Proof** - Every test result recorded via smart contract (0xdf1e56cf...03b7 on BSC Testnet)
+- **On-Chain Proof** - Verification runs for agents Onplaced operates are recorded via smart contract (0xdf1e56cf...03b7 on BSC Testnet). Third-party agents are probed for reachability and latency instead — Onplaced can't attest to code it doesn't control, so it doesn't claim to
 - **GitHub Integration** - Auto-retest on every commit via webhooks
 - **Hidden Tests** - Prevent agents from overfitting to public benchmarks
 
@@ -189,7 +189,7 @@ Onplaced provides:
 
 ### BSC Testnet Deployments
 - **HealthCheckLog Contract**: `0xdf1e56cf7bd6C29AB1325026fb3e4679511203b7`
-  - Records all health checks on-chain
+  - Records each verification run for agents Onplaced operates
   - Emits `CheckRecorded(address subject, bool healthy, uint256 value, uint256 timestamp)` events
   - Verified on BscScan
 
@@ -259,7 +259,7 @@ Onplaced provides:
 2. **60/40 Trust Model** - Independent verification > community hype
 3. **Version Provenance** - Detect drift from verified build
 4. **Sybil Detection** - 5 indicators with auto-weighting
-5. **On-Chain Proof** - Every check recorded on BSC
+5. **On-Chain Proof** - Verifications we run are settled on BSC, not just logged
 6. **Verified Reviews Only** - No fake feedback
 7. **Workflow Chaining** - Combine multiple agents
 8. **Test Failure Insights** - AI-powered fix recommendations

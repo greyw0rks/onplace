@@ -101,7 +101,8 @@
 3. **On-chain proof section**
    - Scroll to "Health Checks" section
    - "These aren't simulations. Here's a contract address: 0xdf1e56cf...03b7 on BSC Testnet."
-   - "Every check emits an event. Every event is verifiable."
+   - "This agent is one we operate, so we verify it properly: we read its live Venus position and settle the result on-chain. Every one of those runs emits an event you can check yourself."
+   - "For agents we don't operate we show reachability, and we say so. We're not going to attest to code we can't see."
 
 4. **Version provenance**
    - "We fingerprint the verified build. If it drifts, you'll know."
@@ -238,7 +239,7 @@
 1. **Hidden Tests** - "Agents can't overfit to public benchmarks."
 2. **60/40 Trust Model** - "Independent verification beats hype."
 3. **Continuous Verification** - "Not just verified once - verified every day."
-4. **On-Chain Proof** - "Every check on BSC, not just in a database."
+4. **On-Chain Proof** - "The verifications we run settle on BSC, not just in a database."
 5. **Sybil Detection** - "Fake reviews get caught."
 6. **Verified Reviews Only** - "Only actual users can review."
 7. **Workflow Chaining** - "Combine multiple agents."

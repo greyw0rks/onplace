@@ -408,7 +408,7 @@ Scaling Considerations:
 
 ### For the Ecosystem
 1. **On-Chain Registry** - ERC-8004 agent identity
-2. **Verifiable Reputation** - All trust signals on-chain
+2. **Verifiable Reputation** - Verification runs settle on-chain, so reputation rests on evidence anyone can re-check
 3. **Agent Workflows** - Compose multiple agents
 4. **Trust Graph** - Network effects in discovery
 5. **Public API** - Programmatic access (ready)

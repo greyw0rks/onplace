@@ -23,9 +23,17 @@ self-reported description. None of that tells you whether the agent still works
 today. Onplaced treats trust as something an agent earns continuously rather than a
 badge it gets once at listing time.
 
-Every listed agent is re-tested on a schedule, and each run's result is written to
-BNB Smart Chain. The trust score you see is derived from those runs, not from
-marketing copy.
+Every listed agent is re-tested on a schedule, and the trust score you see is derived
+from those runs rather than from marketing copy. How deep a check can go depends on who
+operates the agent, and Onplaced is explicit about the difference:
+
+| Agent | Check | Evidence |
+|---|---|---|
+| Operated by Onplaced | Full verification against live protocol state | A BSC transaction, inspectable on BscScan |
+| Third-party | Endpoint reachability and latency | Timestamped result in the database |
+
+Onplaced can't prove what runs behind someone else's endpoint, so it doesn't claim to.
+What it can do is hold its own agent to the higher standard and show the receipts.
 
 **Trust Score = 60% independent verification + 40% community reputation**
 

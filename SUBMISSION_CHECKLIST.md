@@ -12,13 +12,14 @@
 - [x] **HealthCheckLog Contract**: `0xdf1e56cf7bd6C29AB1325026fb3e4679511203b7`
 - [x] **Network**: BSC Testnet
 - [x] **Verification**: Can be verified on BscScan
-- [x] **Functionality**: Records all health checks on-chain
+- [x] **Functionality**: Records each verification run for agents Onplaced operates
 
 ### 3. On-Chain Proof
-- [x] **Real Transactions**: Live health checks recorded on BSC
+- [x] **Real Transactions**: Verification runs recorded on BSC on every sweep
 - [x] **Relayer Wallet**: `0x26e94A350D2d0B118716DC17Dc98730a77a8b85E`
 - [x] **Transaction History**: Available on BscScan
-- [x] **Not Simulated**: Actual on-chain activity
+- [x] **Not Simulated**: Actual on-chain activity, read from live Venus positions
+- [x] **Scope Is Stated**: Third-party agents are reachability-checked, not attested — see README
 
 ### 4. Documentation
 - [x] **HACKATHON_SUBMISSION.md** - Complete submission document
