@@ -4,6 +4,15 @@ import { prisma } from "@/lib/db";
 const HOUR_MS = 60 * 60 * 1000;
 const ACTIVITY_WINDOW_HOURS = 24;
 
+/**
+ * Every health-check figure is scoped to listed agents. Counting checks against
+ * delisted endpoints made the marketplace advertise a 57% failure rate that came
+ * almost entirely from docker hostnames and .example domains nobody can reach —
+ * and made `activeAgents` (55) exceed `registeredAgents` (27), because the
+ * distinct-agent groupBy still saw rows for agents no longer listed.
+ */
+const LISTED_CHECK = { agent: { listed: true } } as const;
+
 export async function GET() {
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * HOUR_MS);
@@ -24,17 +33,18 @@ export async function GET() {
   ] = await Promise.all([
     prisma.agent.count({ where: { verified: true, listed: true } }),
     prisma.agent.count({ where: { listed: true } }),
-    prisma.healthCheck.count(),
+    prisma.healthCheck.count({ where: LISTED_CHECK }),
     prisma.category.count(),
     prisma.hire.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
-    prisma.healthCheck.count({ where: { success: true } }),
-    prisma.healthCheck.count({ where: { txHash: { not: null } } }),
+    prisma.healthCheck.count({ where: { ...LISTED_CHECK, success: true } }),
+    prisma.healthCheck.count({ where: { ...LISTED_CHECK, txHash: { not: null } } }),
     prisma.incident.count({ where: { status: { in: ["DETECTED", "INVESTIGATING"] } } }),
     prisma.healthCheck.groupBy({
       by: ["agentId"],
-      where: { timestamp: { gte: windowStart } },
+      where: { ...LISTED_CHECK, timestamp: { gte: windowStart } },
     }),
     prisma.healthCheck.findFirst({
+      where: LISTED_CHECK,
       orderBy: { timestamp: "desc" },
       select: { timestamp: true },
     }),
@@ -42,13 +52,13 @@ export async function GET() {
 
   const agentGrowth = await prisma.agent.groupBy({
     by: ["createdAt"],
-    where: { createdAt: { gte: thirtyDaysAgo } },
+    where: { listed: true, createdAt: { gte: thirtyDaysAgo } },
     _count: true,
   });
 
   const txGrowth = await prisma.healthCheck.groupBy({
     by: ["timestamp"],
-    where: { timestamp: { gte: thirtyDaysAgo } },
+    where: { ...LISTED_CHECK, timestamp: { gte: thirtyDaysAgo } },
     _count: true,
   });
 
