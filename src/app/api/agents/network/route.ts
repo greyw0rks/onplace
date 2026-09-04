@@ -7,6 +7,8 @@ export async function GET() {
   try {
     // Fetch top 50 agents by activity
     const agents = await prisma.agent.findMany({
+      // The homepage canvas is a marketplace view, so it shows only listed agents.
+      where: { listed: true },
       take: 50,
       orderBy: {
         createdAt: 'desc',

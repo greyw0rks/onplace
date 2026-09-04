@@ -4,6 +4,7 @@ import { Check, ExternalLink, X } from "lucide-react";
 import { getAgent } from "@/lib/agents";
 import { prisma } from "@/lib/db";
 import { trustScoreOf, trustBand } from "@/lib/health-check";
+import { statusPresentation } from "@/lib/agent-status";
 import { VERIFICATION_CRITERIA, MIN_UPTIME } from "@/lib/verification";
 import { createHire } from "./actions";
 import { AgentScopeCanvas } from "../agent-scope-canvas";
@@ -52,6 +53,7 @@ export default async function AgentDetailPage({
   const band = trustBand(trust);
   const trustColor = TRUST_BAND_COLOR[band] ?? "#A3A3A3";
   const isLive = agent.sourceType === "self_built";
+  const state = statusPresentation(agent.status);
   const latestHealthFactor =
     agent.healthChecks.find((c) => c.healthFactor != null)?.healthFactor ?? null;
 
@@ -94,11 +96,27 @@ export default async function AgentDetailPage({
                 Verified
               </span>
             )}
+            <span
+              className="text-[9px] uppercase tracking-wider px-2 py-1 border inline-flex items-center gap-1.5"
+              style={{ color: "#111111", borderColor: `${state.color}88`, background: `${state.color}22` }}
+            >
+              <span
+                className="inline-block w-1.5 h-1.5 rounded-full"
+                style={{ background: state.color }}
+              />
+              {state.label}
+            </span>
           </div>
 
-          {hired && (
+          {hired === "1" && (
             <div className="mb-6 border border-[#42f099] bg-[#42f099]/10 px-3 py-2 text-xs text-[#111111]">
               Agent hired successfully.
+            </div>
+          )}
+
+          {hired === "blocked" && (
+            <div className="mb-6 border border-[#FF3B30] bg-[#FF3B30]/10 px-3 py-2 text-xs text-[#111111]">
+              This agent is suspended and cannot be hired.
             </div>
           )}
 
@@ -114,6 +132,43 @@ export default async function AgentDetailPage({
               }
             />
           </div>
+
+          <PanelSection label="Status" className="mb-8">
+            <p className="text-[11px] leading-relaxed" style={{ color: state.color }}>
+              {state.label}
+            </p>
+            <p className="text-[10px] text-[#808080] mt-1 leading-relaxed">
+              {agent.statusReason ?? state.blurb}
+            </p>
+            {agent.statusChangedAt && (
+              <p className="text-[9px] text-[#A3A3A3] mt-1.5 tabular-nums">
+                since {agent.statusChangedAt.toLocaleString()}
+              </p>
+            )}
+            {!agent.listed && (
+              <p className="text-[10px] text-[#FF3B30] mt-2 leading-relaxed">
+                Not listed in the marketplace: {agent.unlistedReason}
+              </p>
+            )}
+          </PanelSection>
+
+          {agent.capabilities.length > 0 && (
+            <PanelSection label="Capabilities" className="mb-8">
+              <div className="flex flex-wrap gap-1.5">
+                {agent.capabilities.map((capability) => (
+                  <span
+                    key={capability}
+                    className="text-[10px] px-2 py-1 bg-black/[0.04] text-[#111111] border border-black/15"
+                  >
+                    {capability}
+                  </span>
+                ))}
+              </div>
+              <p className="text-[10px] text-[#808080] mt-2 leading-relaxed">
+                Derived from the agent&apos;s own ERC-8004 registry metadata, not self-reported to us.
+              </p>
+            </PanelSection>
+          )}
 
           {latestHealthFactor != null && (
             <PanelSection label="Venus health factor" className="mb-8">
@@ -285,6 +340,14 @@ export default async function AgentDetailPage({
               <Detail label="Registered" value={agent.createdAt.toLocaleDateString()} />
               <Detail label="Endpoint" value={agent.endpointUrl} />
               <Detail label="Risk level" value={agent.riskLevel} />
+              <Detail
+                label="Protocols"
+                value={agent.supportedProtocols.length > 0 ? agent.supportedProtocols.join(", ") : "—"}
+              />
+              <Detail
+                label="Chains"
+                value={agent.supportedChains.length > 0 ? agent.supportedChains.join(", ") : agent.chain}
+              />
             </dl>
           </div>
         </CanvasScroll>

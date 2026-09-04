@@ -24,6 +24,19 @@ enum AgentSourceType {
   self_built
 }
 
+/// Operational state, derived from health-check evidence on every sweep —
+/// except SUSPENDED, which is an operator decision and is never set or cleared
+/// automatically. Without this field there was no way to express "tests failed,
+/// so stop recommending this agent"; the verified badge alone conflates
+/// "unproven" with "known broken".
+enum AgentStatus {
+  MONITORING
+  TESTING
+  HEALTHY
+  DEGRADED
+  SUSPENDED
+}
+
 enum RiskLevel {
   LOW
   MEDIUM
@@ -56,6 +69,16 @@ model Agent {
   chain          String          @default("bsc-testnet")
   walletAddress  String?
   sourceType     AgentSourceType
+  status         AgentStatus     @default(MONITORING)
+  statusReason   String?
+  statusChangedAt DateTime?
+  /// Whether the agent appears in marketplace listings. Duplicate on-chain
+  /// registrations of one service, and endpoints that cannot resolve publicly,
+  /// are unlisted rather than deleted: the registration is a real on-chain fact
+  /// and its check history is evidence, but showing eight copies of the same
+  /// agent — or one pointing at a docker hostname — is not a marketplace.
+  listed         Boolean         @default(true)
+  unlistedReason String?
   categorySlug   CategorySlug
   category       Category        @relation(fields: [categorySlug], references: [slug])
   priceAmount    String?
@@ -117,6 +140,8 @@ model Agent {
   @@index([verified, verifiedAt])
   @@index([trendingScore])
   @@index([featured])
+  @@index([status])
+  @@index([listed, categorySlug])
 }
 
 model HealthCheck {
@@ -525,6 +550,9 @@ model SearchQuery {
 enum ActivityType {
   AGENT_REGISTERED
   AGENT_VERIFIED
+  AGENT_UNVERIFIED
+  AGENT_DEGRADED
+  AGENT_RECOVERED
   AGENT_HIRED
   VERSION_RELEASED
   PERFORMANCE_MILESTONE

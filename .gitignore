@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...but the example must ship. This is a public repo and .env.example is the
+# only place the required configuration is documented for anyone running it.
+!.env.example
 
 # vercel
 .vercel

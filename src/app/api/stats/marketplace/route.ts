@@ -22,8 +22,8 @@ export async function GET() {
     activeAgentGroups,
     lastCheck,
   ] = await Promise.all([
-    prisma.agent.count({ where: { verified: true } }),
-    prisma.agent.count(),
+    prisma.agent.count({ where: { verified: true, listed: true } }),
+    prisma.agent.count({ where: { listed: true } }),
     prisma.healthCheck.count(),
     prisma.category.count(),
     prisma.hire.count({ where: { createdAt: { gte: sevenDaysAgo } } }),

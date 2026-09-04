@@ -1,39 +1,64 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+/**
+ * Agents with the most momentum over the last 7 days: recent successful checks
+ * first, recent hires as the tiebreak.
+ *
+ * This deliberately does NOT use $queryRaw. The previous version did, and spelled
+ * its columns in snake_case (a.reputation_score, h.created_at) — but the schema
+ * declares no @map, so the real Postgres columns are quoted camelCase and every
+ * request 500'd. The discover page's fetch helper swallowed it into an empty
+ * section, so it failed silently for weeks. Prisma's query builder can express
+ * this, so let it own the column names.
+ */
 export async function GET() {
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  const agents = await prisma.$queryRaw<any[]>`
-    SELECT
-      a.*,
-      COUNT(DISTINCT CASE WHEN h.created_at >= ${sevenDaysAgo} THEN h.id END) as recent_hires,
-      COUNT(DISTINCT CASE WHEN hc.timestamp >= ${sevenDaysAgo} AND hc.success = true THEN hc.id END) as recent_successes,
-      COALESCE(
-        (a.reputation_score - LAG(a.reputation_score, 7) OVER (PARTITION BY a.id ORDER BY a.updated_at)) / NULLIF(LAG(a.reputation_score, 7) OVER (PARTITION BY a.id ORDER BY a.updated_at), 0),
-        0
-      ) as score_delta
-    FROM "Agent" a
-    LEFT JOIN "Hire" h ON h.agent_id = a.id
-    LEFT JOIN "HealthCheck" hc ON hc.agent_id = a.id
-    WHERE a.reputation_score IS NOT NULL
-    GROUP BY a.id
-    ORDER BY recent_successes DESC, recent_hires DESC
-    LIMIT 20
-  `;
+  const [recentSuccesses, recentHires] = await Promise.all([
+    prisma.healthCheck.groupBy({
+      by: ["agentId"],
+      where: { success: true, timestamp: { gte: sevenDaysAgo } },
+      _count: { _all: true },
+    }),
+    prisma.hire.groupBy({
+      by: ["agentId"],
+      where: { createdAt: { gte: sevenDaysAgo } },
+      _count: { _all: true },
+    }),
+  ]);
 
-  for (const agent of agents) {
-    const fullAgent = await prisma.agent.findUnique({
-      where: { id: agent.id },
-      include: {
-        category: true,
-        healthChecks: { orderBy: { timestamp: "desc" }, take: 1 },
-        _count: { select: { reviews: true, followers: true, hires: true } },
-      },
-    });
-    Object.assign(agent, fullAgent);
+  const successCount = new Map(recentSuccesses.map((r) => [r.agentId, r._count._all]));
+  const hireCount = new Map(recentHires.map((r) => [r.agentId, r._count._all]));
+
+  const candidateIds = [...new Set([...successCount.keys(), ...hireCount.keys()])];
+
+  if (candidateIds.length === 0) {
+    return NextResponse.json({ agents: [] });
   }
 
-  return NextResponse.json({ agents });
+  const agents = await prisma.agent.findMany({
+    where: { id: { in: candidateIds }, listed: true, reputationScore: { not: null } },
+    include: {
+      category: true,
+      healthChecks: { orderBy: { timestamp: "desc" }, take: 1 },
+      _count: { select: { reviews: true, followers: true, hires: true } },
+    },
+  });
+
+  const ranked = agents
+    .map((agent) => ({
+      ...agent,
+      recentSuccesses: successCount.get(agent.id) ?? 0,
+      recentHires: hireCount.get(agent.id) ?? 0,
+    }))
+    .sort(
+      (a, b) =>
+        b.recentSuccesses - a.recentSuccesses ||
+        b.recentHires - a.recentHires ||
+        (b.reputationScore ?? 0) - (a.reputationScore ?? 0)
+    )
+    .slice(0, 20);
+
+  return NextResponse.json({ agents: ranked });
 }

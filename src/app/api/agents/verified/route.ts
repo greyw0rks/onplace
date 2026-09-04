@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 export async function GET() {
   const agents = await prisma.agent.findMany({
     where: {
+      listed: true,
       verified: true,
       verifiedAt: { not: null },
     },

@@ -172,7 +172,13 @@ async function settleChecks(ids: string[]): Promise<SweepResult[]> {
  * past a serverless function's time limit.
  */
 export async function checkAllAgentsHealth(concurrency = 8) {
-  const agents = await prisma.agent.findMany({ select: { id: true, sourceType: true } });
+  // Only listed agents. Sweeping the unlisted ones spends the cron's 60s budget
+  // on endpoints already known to be unresolvable — docker hostnames, .example
+  // domains — and their failures were what dragged marketplace uptime to 33%.
+  const agents = await prisma.agent.findMany({
+    where: { listed: true },
+    select: { id: true, sourceType: true },
+  });
   const selfBuilt = agents.filter((a) => a.sourceType === "self_built").map((a) => a.id);
   const pingable = agents.filter((a) => a.sourceType !== "self_built").map((a) => a.id);
 

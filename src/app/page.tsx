@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { X } from 'lucide-react';
 import { SpatialLayout } from './components/spatial/SpatialLayout';
@@ -11,6 +11,7 @@ import { BottomContextCards } from './components/spatial/BottomContextCards';
 import { MarketplaceStatsPanel } from './components/spatial/MarketplaceStatsPanel';
 import { NetworkNode, NetworkData, MarketplaceStats } from './components/spatial/types';
 import { ActivityFeed } from './components/ActivityFeed';
+import { SearchBar } from './components/SearchBar';
 
 const ZOOM_STEP = 1.3;
 const ZOOM_MIN = 1;
@@ -53,6 +54,24 @@ export default function SpatialHomePage() {
     <SpatialLayout
       leftContent={
         <LeftPanel>
+          {/* First thing in the panel: a way in. The network canvas is the
+              showpiece but it answers "what is here", not "find me an agent". */}
+          <div className="mb-8">
+            <h2 className="text-[10px] uppercase tracking-wider text-[#808080] font-semibold mb-2">
+              Find an agent
+            </h2>
+            <Suspense fallback={null}>
+              <SearchBar />
+            </Suspense>
+            <p className="text-[10px] text-[#808080] mt-2 leading-relaxed">
+              Search by name, task, protocol or capability — or{' '}
+              <Link href="/discover" className="text-[#FF7A00] hover:underline">
+                browse by filter
+              </Link>
+              .
+            </p>
+          </div>
+
           <MarketplaceStatsPanel onDataLoaded={setStats} />
 
           <div className="mt-8 pt-8 border-t border-black/10">

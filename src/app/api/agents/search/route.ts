@@ -31,7 +31,9 @@ export async function GET(request: NextRequest) {
 
   const userId = searchParams.get("userId") || undefined;
 
-  const where: any = {};
+  // Unlisted agents (duplicate registrations, unresolvable endpoints) never
+  // appear in search — see Agent.listed.
+  const where: any = { listed: true };
 
   if (filters.query) {
     where.OR = [

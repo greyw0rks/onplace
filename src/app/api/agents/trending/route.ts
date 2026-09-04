@@ -7,6 +7,7 @@ export async function GET() {
 
   const agents = await prisma.agent.findMany({
     where: {
+      listed: true,
       OR: [
         { updatedAt: { gte: twentyFourHoursAgo } },
         { hires: { some: { createdAt: { gte: twentyFourHoursAgo } } } },

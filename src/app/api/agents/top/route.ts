@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 
 export async function GET() {
   const agents = await prisma.agent.findMany({
-    where: { verified: true },
+    where: { verified: true, listed: true },
     include: {
       category: true,
       healthChecks: { orderBy: { timestamp: "desc" }, take: 1 },

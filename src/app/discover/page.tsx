@@ -8,6 +8,7 @@ import { CanvasScroll, CanvasGrid, CanvasEmpty } from "../components/spatial/Can
 import { AgentCard, AgentCardData } from "../components/spatial/AgentCard";
 import { trustBand } from "@/lib/health-check";
 import { fetchInternalJson } from "@/lib/base-url";
+import type { AgentStatus } from "@/generated/prisma/enums";
 
 interface DiscoverAgent {
   id: string;
@@ -18,6 +19,10 @@ interface DiscoverAgent {
   reputationScore: number | null;
   uptimePct: number | null;
   verified: boolean;
+  status?: AgentStatus | null;
+  capabilities?: string[] | null;
+  supportedProtocols?: string[] | null;
+  latencyMs?: number | null;
   _count?: { reviews?: number; hires?: number };
 }
 
@@ -37,6 +42,11 @@ function toCard(agent: DiscoverAgent): AgentCardData {
     category: agent.categorySlug,
     trust,
     band: trustBand(trust),
+    status: agent.status ?? null,
+    capabilities: agent.capabilities ?? null,
+    protocols: agent.supportedProtocols ?? null,
+    uptimePct: agent.uptimePct,
+    latencyMs: agent.latencyMs ?? null,
     live: agent.verified,
     footer: `${agent._count?.hires ?? 0} hires`,
   };

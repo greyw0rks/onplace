@@ -35,6 +35,11 @@ export default async function AgentsPage({
       category: agent.categorySlug,
       trust,
       band: trustBand(trust),
+      status: agent.status,
+      capabilities: agent.capabilities,
+      protocols: agent.supportedProtocols,
+      uptimePct: agent.uptimePct,
+      latencyMs: agent.latencyMs,
       healthy: agent.healthChecks?.[0]?.success ?? null,
       live: agent.sourceType === "self_built",
     };

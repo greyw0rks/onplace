@@ -1,10 +1,18 @@
 import { CategorySlug } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/db";
 
+/**
+ * Only listed agents appear anywhere a user browses. Unlisted rows are duplicate
+ * on-chain registrations of one service, or endpoints that cannot resolve for
+ * anyone — see Agent.listed. `getAgent` deliberately ignores the gate so a direct
+ * link still resolves and can explain why the agent is hidden, rather than 404ing.
+ */
+const LISTED = { listed: true } as const;
+
 export function listCategories() {
   return prisma.category.findMany({
     orderBy: { slug: "asc" },
-    include: { _count: { select: { agents: true } } },
+    include: { _count: { select: { agents: { where: LISTED } } } },
   });
 }
 
@@ -22,7 +30,7 @@ export function listAgentsByCategory(
         : [{ reputationScore: "desc" as const }, { uptimePct: "desc" as const }];
 
   return prisma.agent.findMany({
-    where: slug ? { categorySlug: slug } : undefined,
+    where: slug ? { ...LISTED, categorySlug: slug } : LISTED,
     include: {
       category: true,
       healthChecks: { orderBy: { timestamp: "desc" }, take: 1 },
@@ -46,7 +54,7 @@ export function listTopAgentsPerCategory(perCategory = 3) {
   return Promise.all(
     Object.values(CategorySlug).map((slug) =>
       prisma.agent.findMany({
-        where: { categorySlug: slug },
+        where: { ...LISTED, categorySlug: slug },
         include: { category: true },
         orderBy: { reputationScore: "desc" },
         take: perCategory,

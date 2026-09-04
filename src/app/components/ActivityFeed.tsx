@@ -115,6 +115,9 @@ function getActivityIcon(type: string): string {
   const icons: Record<string, string> = {
     AGENT_REGISTERED: "🚀",
     AGENT_VERIFIED: "✓",
+    AGENT_UNVERIFIED: "○",
+    AGENT_DEGRADED: "▼",
+    AGENT_RECOVERED: "▲",
     AGENT_HIRED: "💼",
     VERSION_RELEASED: "📦",
     PERFORMANCE_MILESTONE: "🏆",
@@ -129,6 +132,9 @@ function getActivityColor(type: string): string {
   const colors: Record<string, string> = {
     AGENT_REGISTERED: "#3ef2ff",
     AGENT_VERIFIED: "#42f099",
+    AGENT_UNVERIFIED: "#808080",
+    AGENT_DEGRADED: "#ffb13e",
+    AGENT_RECOVERED: "#42f099",
     AGENT_HIRED: "#ff3ea5",
     VERSION_RELEASED: "#c6ff3e",
     PERFORMANCE_MILESTONE: "#FF7A00",
